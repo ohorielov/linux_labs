@@ -1,6 +1,7 @@
 #### Pleace, create your oun branch from develop with name according to exel table
     git checkout -b XX-YY_Surname_Name
 or
+
     git branch XX-YY_Surname_Name
     git checkout XX-YY_Surname_Name
 
