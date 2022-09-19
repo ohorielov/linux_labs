@@ -1,6 +1,7 @@
-#### Pleace, create your oun branch from develop with name according to exel table
+#### Please, create your own branch from develop with name according to excel table
     git checkout -b XX-YY_Surname_Name
 or
+
     git branch XX-YY_Surname_Name
     git checkout XX-YY_Surname_Name
 
@@ -9,7 +10,7 @@ or
     mkdir XX-YY_Surname_Name
     cd XX-YY_Surname_Name
 
-#### After compliting your task check all changed files
+#### After completing your task check all changed files
     git status
 
 #### Add and commit changed or untracked files with next commit message
