@@ -1,11 +1,18 @@
+OBJ_FOLDER=obj
+EXECUTABLE = reader
+SOURCE_FILES := $(wildcard *.c)
+OBJECT_FILES := $(SOURCE_FILES:%.c=$(OBJ_FOLDER)/%.o)
+
 all:reader
+reader: $(OBJ_FOLDER) $(OBJECT_FILES)
+	gcc  -o $(EXECUTABLE) $(OBJECT_FILES) -lm
 
-reader: reader.o my_lib.o
-	gcc -o reader reader.o my_lib.o
-reader.o:reader.c
-	gcc -c reader.c
-my_lib.o:my_lib.c
-	gcc -c my_lib.c
+$(OBJ_FOLDER)/%.o:%.c
+	echo $(OBJECT_FILES)
+	gcc -c $< -o $@
 
+$(OBJ_FOLDER):
+	mkdir $(OBJ_FOLDER)
 clean:
-	rm -rf *.o reader
+	rm $(OBJECT_FILES) $(EXECUTABLE) 
+	rmdir $(OBJ_FOLDER)

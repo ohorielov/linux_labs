@@ -2,6 +2,7 @@
 
 int main()
 {
-	read_wav("sample-6s.wav");
+	printf("Welcome!\n");
+	read_wav("Master Of Puppets.wav");
 	return 0;
 }
