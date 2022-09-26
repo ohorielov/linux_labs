@@ -12,15 +12,23 @@ class WAVReader
 {
     WAVHeader m_wavHeader;
     FILE *m_filePtr;
+    std::string m_fileName;
     std::uint64_t m_headerSize;
-    void Read(std::uint64_t count);
+    std::uint16_t m_bytesPerSample;
+    std::uint64_t m_numSamples;
     void Read();
-    bool CheckIfFileExists(const std::string &fileName);
+
+    friend class WAVProcessor;
 
 public:
     WAVReader(const std::string &fileName);
+    WAVReader(const WAVReader&) = delete;
+    WAVReader(WAVReader&& wavReader) noexcept;
     ~WAVReader();
-    void OutputHeaderInfo();
+    void OutputHeaderInfo() const;
+    WAVHeader GetHeader() const;
+    std::uint16_t GetBytesPerSample() const;
+    std::uint64_t GetNumOfSamples() const;
 };
 
 #endif//IP_02_DEMCHENKO_OLEKSII_WAVREADER_H
