@@ -8,12 +8,12 @@
 
 class WAVProcessor
 {
-WAVReader m_wavReader;
+    WAVReader m_wavReader;
 
 public:
-    WAVProcessor(WAVReader& wavReader);
-    WAVProcessor(const WAVProcessor&) = delete;
-    WAVProcessor(WAVProcessor&&) = delete;
+    WAVProcessor(WAVReader &wavReader);
+    WAVProcessor(const WAVProcessor &) = delete;
+    WAVProcessor(WAVProcessor &&) = delete;
     ~WAVProcessor() = default;
     void CopyAndChangeVolume(float multiplier);
 };

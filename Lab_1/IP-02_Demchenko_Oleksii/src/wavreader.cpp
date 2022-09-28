@@ -11,8 +11,6 @@
 
 WAVReader::WAVReader(const std::string &fileName)
     : m_headerSize(sizeof(WAVHeader)),
-      m_bytesPerSample(0),
-      m_numSamples(0),
       m_fileName(fileName),
       m_sampleData(nullptr)
 {
@@ -27,17 +25,13 @@ WAVReader::WAVReader(const std::string &fileName)
 
 WAVReader::WAVReader(WAVReader &&wavReader) noexcept
     : m_wavHeader(wavReader.m_wavHeader),
-      m_bytesPerSample(wavReader.m_bytesPerSample),
       m_filePtr(wavReader.m_filePtr),
-      m_numSamples(wavReader.m_numSamples),
       m_headerSize(wavReader.m_headerSize),
       m_fileName(wavReader.m_fileName),
       m_sampleData(wavReader.m_sampleData)
 {
     wavReader.m_wavHeader = WAVHeader();
-    wavReader.m_bytesPerSample = 0;
     wavReader.m_filePtr = nullptr;
-    wavReader.m_numSamples = 0;
     wavReader.m_headerSize = 0;
     wavReader.m_fileName = "";
     wavReader.m_sampleData = nullptr;
@@ -64,16 +58,6 @@ void WAVReader::Read()
 
     fclose(m_filePtr);
     m_filePtr = nullptr;
-}
-
-uint16_t WAVReader::GetBytesPerSample() const
-{
-    return m_bytesPerSample;
-}
-
-uint64_t WAVReader::GetNumOfSamples() const
-{
-    return m_numSamples;
 }
 
 WAVHeader WAVReader::GetHeader() const

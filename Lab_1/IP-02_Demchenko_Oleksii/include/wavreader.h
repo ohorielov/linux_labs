@@ -12,19 +12,17 @@ class WAVReader
 {
     WAVHeader m_wavHeader;
     FILE *m_filePtr;
-    std::int16_t* m_sampleData;
+    std::int16_t *m_sampleData;
     std::string m_fileName;
     std::uint64_t m_headerSize;
-    std::uint16_t m_bytesPerSample;
-    std::uint64_t m_numSamples;
     void Read();
 
     friend class WAVProcessor;
 
 public:
     WAVReader(const std::string &fileName);
-    WAVReader(const WAVReader&) = delete;
-    WAVReader(WAVReader&& wavReader) noexcept;
+    WAVReader(const WAVReader &) = delete;
+    WAVReader(WAVReader &&wavReader) noexcept;
     ~WAVReader();
     void OutputHeaderInfo() const;
     WAVHeader GetHeader() const;

@@ -2,27 +2,26 @@
 // Created by h1lary on 27.09.22.
 //
 #include "wavprocessor.h"
-#include <vector>
-#include <stdio.h>
-#include <fstream>
+#include "common.h"
 #include "wav.h"
-#include <memory>
 #include <cstring>
 #include <filesystem>
-#include "common.h"
+#include <fstream>
+#include <memory>
+#include <stdio.h>
+#include <vector>
 
-WAVProcessor::WAVProcessor(WAVReader& wavReader)
-: m_wavReader(std::move(wavReader))
+WAVProcessor::WAVProcessor(WAVReader &wavReader)
+    : m_wavReader(std::move(wavReader))
 {
-
 }
 
 void WAVProcessor::CopyAndChangeVolume(float multiplier)
 {
-    const std::filesystem::path path { m_wavReader.m_fileName };
+    const std::filesystem::path path{m_wavReader.m_fileName};
 
-    auto newFileName { path.parent_path().string() + common::GetSeparator() + std::string { "(changed)" } + path.filename().string() };
-    auto newFilePtr { std::fopen(newFileName.c_str(), "w") };
+    auto newFileName{path.parent_path().string() + common::GetSeparator() + std::string{"(changed)"} + path.filename().string()};
+    auto newFilePtr{std::fopen(newFileName.c_str(), "w")};
 
     // writing header
     std::fwrite(&m_wavReader.m_wavHeader.RIFF, sizeof(WAVHeader), size_t{1}, newFilePtr);
