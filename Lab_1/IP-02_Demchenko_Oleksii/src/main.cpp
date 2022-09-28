@@ -1,7 +1,7 @@
-#include <iostream>
 #include "wav.h"
-#include "wavreader.h"
 #include "wavprocessor.h"
+#include "wavreader.h"
+#include <iostream>
 
 namespace
 {
@@ -10,7 +10,7 @@ void Process(const std::string &filePath)
     WAVReader wavReader{filePath};
     wavReader.OutputHeaderInfo();
 
-    WAVProcessor wavProcessor { wavReader };
+    WAVProcessor wavProcessor{wavReader};
     wavProcessor.CopyAndChangeVolume(-0.7f);
 }
 }// namespace
