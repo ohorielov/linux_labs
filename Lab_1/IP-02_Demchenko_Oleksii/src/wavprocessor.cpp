@@ -8,6 +8,8 @@
 #include "wav.h"
 #include <memory>
 #include <cstring>
+#include <filesystem>
+#include "common.h"
 
 WAVProcessor::WAVProcessor(WAVReader& wavReader)
 : m_wavReader(std::move(wavReader))
@@ -17,29 +19,22 @@ WAVProcessor::WAVProcessor(WAVReader& wavReader)
 
 void WAVProcessor::CopyAndChangeVolume(float multiplier)
 {
-    const auto newFileName { m_wavReader.m_fileName + "(changed)" };
-    auto newFilePtr { std::make_unique<FILE*>(std::fopen(newFileName.c_str(), "w")) };
+    const std::filesystem::path path { m_wavReader.m_fileName };
+
+    auto newFileName { path.parent_path().string() + common::GetSeparator() + std::string { "(changed)" } + path.filename().string() };
+    auto newFilePtr { std::fopen(newFileName.c_str(), "w") };
 
     // writing header
-    std::fwrite(&m_wavReader.m_wavHeader, sizeof(WAVHeader), size_t { 1 }, *newFilePtr);
+    std::fwrite(&m_wavReader.m_wavHeader.RIFF, sizeof(WAVHeader), size_t{1}, newFilePtr);
 
-    static const std::uint16_t bufferSize { 4096 };
-    std::vector<char> buffer;
-    buffer.resize(bufferSize);
-
-    std::uint64_t bytesRead { 0 };
-    while ((bytesRead = std::fread(&buffer, sizeof(buffer[0]), bufferSize / sizeof(buffer[0]), m_wavReader.m_filePtr)) > 0)
+    for (int i = 0; i < m_wavReader.m_wavHeader.Subchunk2Size; ++i)
     {
-        for (int i = 0; i < buffer.size(); ++i)
-        {
-            std::int64_t sample { 0 };
-            for (int j = 0; j < m_wavReader.m_bytesPerSample; ++j)
-            {
-                sample = sample | buffer[i+j] << j * 8;
-            }
-            sample = static_cast<std::uint64_t>(sample * multiplier);
-            std::fwrite(&sample, sizeof(m_wavReader.m_bytesPerSample), 1, *newFilePtr);
-            i += m_wavReader.m_bytesPerSample - 1;
-        }
+        std::int16_t sample = m_wavReader.m_sampleData[i];
+        sample += static_cast<std::int16_t>(sample * multiplier);
+        m_wavReader.m_sampleData[i] = sample;
     }
+
+    std::fwrite(m_wavReader.m_sampleData, m_wavReader.m_wavHeader.Subchunk2Size, size_t{1}, newFilePtr);
+
+    std::fclose(newFilePtr);
 }

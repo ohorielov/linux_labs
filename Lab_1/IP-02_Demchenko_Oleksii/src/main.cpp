@@ -11,7 +11,7 @@ void Process(const std::string &filePath)
     wavReader.OutputHeaderInfo();
 
     WAVProcessor wavProcessor { wavReader };
-    wavProcessor.CopyAndChangeVolume(0.7f);
+    wavProcessor.CopyAndChangeVolume(-0.7f);
 }
 }// namespace
 

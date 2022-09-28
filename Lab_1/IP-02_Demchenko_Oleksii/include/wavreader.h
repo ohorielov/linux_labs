@@ -12,6 +12,7 @@ class WAVReader
 {
     WAVHeader m_wavHeader;
     FILE *m_filePtr;
+    std::int16_t* m_sampleData;
     std::string m_fileName;
     std::uint64_t m_headerSize;
     std::uint16_t m_bytesPerSample;

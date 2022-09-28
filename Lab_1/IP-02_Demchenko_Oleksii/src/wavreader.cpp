@@ -13,7 +13,8 @@ WAVReader::WAVReader(const std::string &fileName)
     : m_headerSize(sizeof(WAVHeader)),
       m_bytesPerSample(0),
       m_numSamples(0),
-      m_fileName(fileName)
+      m_fileName(fileName),
+      m_sampleData(nullptr)
 {
     if (common::CheckIfFileExists(fileName))
     {
@@ -30,7 +31,8 @@ WAVReader::WAVReader(WAVReader &&wavReader) noexcept
       m_filePtr(wavReader.m_filePtr),
       m_numSamples(wavReader.m_numSamples),
       m_headerSize(wavReader.m_headerSize),
-      m_fileName(wavReader.m_fileName)
+      m_fileName(wavReader.m_fileName),
+      m_sampleData(wavReader.m_sampleData)
 {
     wavReader.m_wavHeader = WAVHeader();
     wavReader.m_bytesPerSample = 0;
@@ -38,11 +40,15 @@ WAVReader::WAVReader(WAVReader &&wavReader) noexcept
     wavReader.m_numSamples = 0;
     wavReader.m_headerSize = 0;
     wavReader.m_fileName = "";
+    wavReader.m_sampleData = nullptr;
 }
 
 WAVReader::~WAVReader()
 {
-    delete m_filePtr;
+    if (m_filePtr != nullptr)
+        delete m_filePtr;
+    if (m_sampleData != nullptr)
+        delete[] m_sampleData;
 }
 
 void WAVReader::Read()
@@ -53,8 +59,11 @@ void WAVReader::Read()
         throw pretty_expection(__PRETTY_FUNCTION__ + std::string(": unexpected behavior while reading"));
     }
 
-    m_bytesPerSample = m_wavHeader.bitsPerSample / 8;
-    m_numSamples = m_wavHeader.ChunkSize / m_bytesPerSample;
+    m_sampleData = new std::int16_t[m_wavHeader.Subchunk2Size];
+    fread(m_sampleData, m_wavHeader.Subchunk2Size, 1, m_filePtr);
+
+    fclose(m_filePtr);
+    m_filePtr = nullptr;
 }
 
 uint16_t WAVReader::GetBytesPerSample() const
