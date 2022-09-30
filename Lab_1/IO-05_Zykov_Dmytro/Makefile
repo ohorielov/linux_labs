@@ -1,7 +1,7 @@
 CC=clang
 CFLAGS=-std=c11 -g -Wall -Wextra -Werror -Wpedantic -Wno-unused-parameter
 INCLUDES=-Isrc
-LDFLAGS=
+LDFLAGS=-lm
 
 SRC=$(wildcard src/*.c)
 OBJ=$(SRC:.c=.o)

@@ -2,6 +2,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <math.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -32,9 +34,53 @@ int wav_load(wav_t *wav, const char *filename) {
     read(fd, wav, METADATA_SIZE);
 
     // Read WAV data
-    wav->data.data = (uint8_t *)malloc(wav->file_size - METADATA_SIZE);
+    wav->data.data = (int16_t *)malloc(wav->file_size - METADATA_SIZE);
     read(fd, wav->data.data, wav->file_size - METADATA_SIZE);
 
     close(fd);
     return 1;
+}
+
+int wav_change_volume(wav_t *wav, float factor) {
+    if (wav == NULL) {
+        return -1;
+    }
+
+    int size = (wav->file_size - METADATA_SIZE) / sizeof(int16_t);
+    for (int i = 0; i < size; i++) {
+        double scaled_value = floor((wav->data.data[i] * factor) + 0.5);
+
+        // Clamp new value
+        if (scaled_value >= INT16_MAX) {
+            wav->data.data[i] = INT16_MAX;
+        } else if (scaled_value <= INT16_MIN) {
+            wav->data.data[i] = INT16_MIN;
+        } else {
+            wav->data.data[i] = (int16_t)scaled_value;
+        }
+    }
+
+    return 1;
+}
+
+int wav_save(wav_t* wav, const char *filename) {
+    if (wav == NULL) {
+        return -1;
+    }
+
+    int fd = creat(filename, S_IRUSR | S_IWUSR);
+    if (fd == -1) {
+        fprintf(stderr, "Failed to create file \"%s\"\n", filename);
+        return -1;
+    }
+
+    write(fd, wav, METADATA_SIZE);
+    write(fd, wav->data.data, wav->file_size - METADATA_SIZE);
+
+    close(fd);
+    return 1;
+}
+
+void wav_clear(wav_t* wav) {
+    free(wav->data.data);
 }

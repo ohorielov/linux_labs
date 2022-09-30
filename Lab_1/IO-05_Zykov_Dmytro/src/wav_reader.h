@@ -7,7 +7,7 @@
 typedef struct {
     uint32_t id;
     uint32_t size;
-    uint32_t format;
+    char format[4];
 } riff_t;
 
 // "fmt" sub-chunk
@@ -26,7 +26,7 @@ typedef struct {
 typedef struct {
     uint32_t id;
     uint32_t size;
-    uint8_t *data;
+    int16_t *data;
 } data_t;
 
 // WAV structure
@@ -39,5 +39,13 @@ typedef struct  {
 
 // Loads wav file
 int wav_load(wav_t *wav, const char *filename);
+
+// Amplifies volume 
+int wav_change_volume(wav_t *wav, float factor);
+
+// Saves wav to file
+int wav_save(wav_t* wav, const char *filename);
+
+void wav_clear(wav_t* wav);
 
 #endif // LAB_1_WAV_READER_H_
