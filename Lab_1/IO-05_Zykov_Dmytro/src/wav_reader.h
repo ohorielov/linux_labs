@@ -3,11 +3,6 @@
 
 #include <stdint.h>
 
-// WAV header chunks sizes
-#define RIFF_SIZE   12
-#define FMT_SIZE    24
-#define DATA_SIZE   8
-
 // "RIFF" chuck descriptor
 typedef struct {
     uint32_t id;
@@ -31,6 +26,7 @@ typedef struct {
 typedef struct {
     uint32_t id;
     uint32_t size;
+    uint8_t *data;
 } data_t;
 
 // WAV structure
@@ -38,7 +34,10 @@ typedef struct  {
     riff_t  riff;
     fmt_t   fmt;
     data_t  data;
+    uint64_t file_size;
 } wav_t;
 
+// Loads wav file
+int wav_load(wav_t *wav, const char *filename);
 
 #endif // LAB_1_WAV_READER_H_
