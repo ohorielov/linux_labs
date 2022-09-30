@@ -26,21 +26,27 @@ typedef struct {
 typedef struct {
     uint32_t id;
     uint32_t size;
-    int16_t *data;
+    void *data;
 } data_t;
+
+typedef enum {
+    SF_INT16 = 2,
+    SF_FLOAT32 = 4
+} sample_format_t;
 
 // WAV structure
 typedef struct  {
     riff_t  riff;
     fmt_t   fmt;
     data_t  data;
+    sample_format_t sample_format;
     uint64_t file_size;
 } wav_t;
 
 // Loads wav file
 int wav_load(wav_t *wav, const char *filename);
 
-// Amplifies volume 
+// Amplifies volume by certain scale
 int wav_change_volume(wav_t *wav, float factor);
 
 // Saves wav to file
