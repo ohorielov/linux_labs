@@ -1,11 +1,9 @@
 #include <iostream>
-#include "FileReader.h"
+#include "WavManager.h"
 
 int main()
 {
-    FileReader* fr = FileReader::GetInstance();
-
-    fr->ReadFile("somefile.wav");
+    WavManager inputFile("../Master Of Puppets.wav");
 
     return 0;
 }

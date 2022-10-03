@@ -1,11 +1,27 @@
-main : main.o FileReader.o
-	g++ -o main main.o FileReader.o
- 
-main.o : main.cpp FileReader.h
-	g++ -c main.cpp FileReader.h
+CC = g++
+OBJECTS = main.o WavManager.o
+FLAGS = 
 
-FileReader.o : FileReader.h FileReader.cpp
-	g++ -c FileReader.h FileReader.cpp
-	
-clean : 
-	rm main main.o FileReader.o
+ifeq ($(conf), d)
+	FLAGS += -DDEBUG
+else
+	FLAGS += -DRELEASE
+endif
+
+
+main: $(OBJECTS)
+	$(CC) $(FLAGS) -o main $(OBJECTS)
+ 
+main.o: main.cpp WavManager.h
+	$(CC) $(FLAGS) -c main.cpp WavManager.h
+
+WavManager.o: WavManager.h WavManager.cpp LogMacros.h
+	$(CC) $(FLAGS) -c WavManager.h WavManager.cpp LogMacros.h
+
+
+clean: 
+	rm main $(OBJECTS)
+
+help:
+	@echo 'conf: (optional)'
+	@echo '	d - Add this flag to build project in debug configuration.'
