@@ -1,9 +1,10 @@
-#include <iostream>
 #include "WavManager.h"
 
 int main()
 {
-    WavManager inputFile("../Master Of Puppets.wav");
+    WavManager wavManager;
+
+    wavManager.IncreaseVolume("../Master Of Puppets.wav", "OutFile_VolumeUp.wav");
 
     return 0;
 }

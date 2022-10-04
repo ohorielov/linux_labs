@@ -1,35 +1,38 @@
 #include "WavManager.h"
 
-WavManager::WavManager(const std::string& fileName)
-{
-    Open(fileName);
-};
+WavManager::WavManager()
+{};
 
 WavManager::~WavManager()
-{
-    Close();
-}
+{}
 
-void WavManager::Open(const std::string& fileName)
+void WavManager::IncreaseVolume(const std::string& inputFileName, const std::string& outputFileName)
 {
-    std::string vertexCode;
-    std::ifstream inputFile;
-
     inputFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    outputFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
     try
     {
-        inputFile.open(fileName, std::ios::binary);
-        int numRead;
+        inputFile.open(inputFileName, std::ios::binary);
+        outputFile.open(outputFileName, std::ios::binary);
 
-        if(!inputFile.read(reinterpret_cast<char*>(&fileHeader), sizeof(WavManager::FileHeader)))
-        {
-            std::cout << "Failed to read file header" << std::endl;
-            exit(3);
-        }
-        else
-        {
-            DebugLog(fileHeader);
-        }
+        // reading data
+        data = std::make_unique<std::vector<char>>( std::istreambuf_iterator<char>(inputFile), 
+                                                    std::istreambuf_iterator<char>());
+
+        if(data == nullptr)
+            DebugLog("Failed to read file.");
+        else if(data->size() == 0)
+            DebugLog("File is empty");
+
+        // processing data
+        if (ReadHeader())
+            DebugLog("Failed to read header");
+        if (ProcessData())
+            DebugLog("An error occured while processing data.");
+
+        inputFile.close();
+        outputFile.close();
     }
     catch (std::ifstream::failure& e)
     {
@@ -37,12 +40,18 @@ void WavManager::Open(const std::string& fileName)
     }
 }
 
-void WavManager::Close()
+int WavManager::ReadHeader()
 {
-    std::cout << "File closed." << std::endl;
+    return 0;
+}
+
+int WavManager::ProcessData()
+{
+    return 0;
 }
 
 // FileHeader stuff
+#if DEBUG
 std::ostream& operator<< (std::ostream& out, const WavManager::FileHeader& fh)
 {
     out << "/--RIFF Chunk Descriptor--/" << std::endl;
@@ -79,3 +88,4 @@ std::ostream& operator<< (std::ostream& out, const WavManager::FileHeader& fh)
     out << "Subchunk2Size: \t"  << fh.Subchunk2Size;
     return out;
 }
+#endif //DEBUG

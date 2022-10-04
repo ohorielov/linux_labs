@@ -1,8 +1,10 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <sstream>
+#include <iterator>
+#include <vector>
 #include <exception>
+#include <memory>
 #include "LogMacros.h"
 
 class WavManager
@@ -17,7 +19,7 @@ public:
         /* "fmt" sub-chunk */
         uint8_t         Subchunk1ID[4]; // FMT header
         uint32_t        Subchunk1Size;  // Size of the fmt chunk
-        uint16_t        AudioFormat;    // Audio format 1=PCM,6=mulaw,7=alaw,     257=IBM Mu-Law, 258=IBM A-Law, 259=ADPCM
+        uint16_t        AudioFormat;    // Audio format 1=PCM, 6=mulaw, 7=alaw, 257=IBM Mu-Law, 258=IBM A-Law, 259=ADPCM
         uint16_t        NumChannels;    // Number of channels 1=Mono 2=Sterio
         uint32_t        SampleRate;     // Sampling Frequency in Hz
         uint32_t        ByteRate;       // bytes per second
@@ -26,17 +28,21 @@ public:
         /* "data" sub-chunk */
         uint8_t         Subchunk2ID[4]; // "data"  string
         uint32_t        Subchunk2Size;  // Sampled data length
-
+#if DEBUG
         friend std::ostream& operator<< (std::ostream& out, const FileHeader& fh);
+#endif //DEBUG
     };
 public:
-    WavManager(const std::string& fileName);
+    WavManager();
     ~WavManager();
 
-    void Open(const std::string& fileName);
-    void Close();
-    bool IsOpen();
-
+    void IncreaseVolume(const std::string& inputFileName, const std::string& outputFileName);
 private:
-    FileHeader fileHeader;
+    FileHeader fileHeader = {};
+    std::ifstream inputFile;
+    std::ofstream outputFile;
+    std::unique_ptr<std::vector<char>> data;
+
+    int ReadHeader();
+    int ProcessData();
 };
