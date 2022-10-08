@@ -10,17 +10,17 @@
 
 #define WAV_METADATA_SIZE (RIFF_SIZE + FMT_CHNK_SIZE + DATA_CHNK_SIZE)
 
-char wav_format_str[4] = {'W', 'A', 'V', 'E'};
+const char wav_format_str[4] = {'W', 'A', 'V', 'E'};
 uint32_t wav_format = *(uint32_t*)(wav_format_str);
 
-struct riff // 12 bytes
+typedef struct riff // 12 bytes
 {
     uint32_t id;
     uint32_t size;
     uint32_t format;
-};
+} __attribute__((packed)) riff;
 
-struct fmt_chunk // 24
+typedef struct fmt_chunk // 24
 {
     uint32_t id;
     uint32_t size;
@@ -30,21 +30,21 @@ struct fmt_chunk // 24
     uint32_t byte_rate;
     uint16_t block_align;
     uint16_t bits_per_sample;
-};
+} __attribute__((packed)) fmt_chunk;
 
-struct data_chunk // 8 + ptr
+typedef struct data_chunk // 8 + ptr
 {
     uint32_t id;
     uint32_t size;
     uint8_t *data;
-};
+} __attribute__((packed)) data_chunk;
 
-struct wav
+typedef struct wav
 {
     riff _riff;
     fmt_chunk _fmt;
     data_chunk _data;
-};
+} __attribute__((packed)) wav;
 
 void reverse(uint8_t* data, size_t length) {
     for(size_t i = 0; i < length / 2; i++) {
@@ -52,12 +52,6 @@ void reverse(uint8_t* data, size_t length) {
         data[i] = data[length - i];
         data[length - i] = temp;
     }
-}
-
-void to_little_end_all(wav* _wav) {
-//    reverse((uint8_t*)&_wav->_riff.id, 4);
-//    reverse((uint8_t*)&_wav->_fmt.id, 4);
-//    reverse((uint8_t*)&_wav->_data.id, 4);
 }
 
 wav* load_wav(char* filename) {
@@ -83,9 +77,29 @@ wav* load_wav(char* filename) {
 
     fclose(fd);
 
-    to_little_end_all(_wav);
-
     return _wav;
+}
+
+void wav_save(wav* _wav, char* filename) {
+    FILE* fd = fopen(filename, "w");
+
+    fwrite((uint8_t*)&_wav->_riff, RIFF_SIZE, 1, fd);
+    fwrite((uint8_t*)&_wav->_fmt, FMT_CHNK_SIZE, 1, fd);
+    fwrite((uint8_t*)&_wav->_data, DATA_CHNK_SIZE, 1, fd);
+
+    fwrite((uint8_t*)_wav->_data.data, _wav->_data.size, 1, fd);
+
+    fclose(fd);
+}
+
+void wav_db_add(wav* _wav, float value) {
+    int data_size = _wav->_data.size;
+    int chunk_size = _wav->_fmt.bits_per_sample / 8;
+
+    for(int i = 0; i < data_size; i += chunk_size) {
+        int16_t *chunk = ((int16_t*)(_wav->_data.data + i));
+        *chunk *= value;
+    }
 }
 
 void free_wav(wav* _wav) {
