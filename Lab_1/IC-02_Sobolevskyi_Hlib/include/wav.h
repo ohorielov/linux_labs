@@ -11,12 +11,10 @@
 
 #define WAV_METADATA_SIZE (RIFF_SIZE + FMT_CHANK_SIZE + DATA_CHANK_SIZE)
 
-// const char format[] = "WAVE";
-
 typedef struct
 {
     uint32_t id;
-    uint32_t chuck_size;
+    uint32_t size;
     uint32_t format;
 } RIFF;
 
@@ -47,7 +45,4 @@ typedef struct
 } WAV;
 
 WAV* load_wav(const char* filename);
-
-void update_wav(WAV* wav);
-
-void save_wav(WAV* wav, const char* filename);
+void save_wav(WAV* wav, float scale, const char* filename);
