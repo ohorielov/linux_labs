@@ -1,8 +1,9 @@
 #include "my_lib.h"
 
-int main()
-{
+int main(){
 	printf("Welcome!\n");
-	read_wav("Master Of Puppets.wav");
+	if(read_wav("Master Of Puppets.wav")){
+		printf("Can`t find file Master Of Puppets.wav");
+	}
 	return 0;
 }

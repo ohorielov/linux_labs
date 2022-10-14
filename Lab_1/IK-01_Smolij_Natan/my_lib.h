@@ -4,13 +4,19 @@
 #include <string.h>
 #include <math.h>
 
-typedef struct
-{
+typedef struct __attribute__((packed,aligned(4))){
 uint32_t chunkID;
 uint32_t chunkSize;
 void* data;
-}sub_chunk;
+}sub_chunk ;
+
+
+typedef enum{
+	MULTIPLY,
+	ADD,
+	TREMBLE
+}work_mode;
 
 void say(const char*);
-char update_data(char,sub_chunk*);
+char update_data(work_mode,sub_chunk*);
 char read_wav(const char*);
