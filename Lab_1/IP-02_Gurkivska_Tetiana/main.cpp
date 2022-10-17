@@ -10,3 +10,5 @@ int main()
     wav.print_data();
     wav.change_and_safe();
 }
+
+
