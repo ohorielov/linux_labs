@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #ifndef LAB_1_WAVE_H
 #define LAB_1_WAVE_H
@@ -24,11 +25,12 @@ typedef struct{
 
     uint32_t subchunk2Id;
     uint32_t subchunk2Size;
-    uint8_t *dataSize;
+    uint8_t *wavData;
 
 } WAV_HEADER;
 
 WAV_HEADER* openFile(char *filename);
-void changeVolume(WAV_HEADER* header, char* filename );
+void changeVolume(WAV_HEADER* header, bool riseUp);
+void saveInNewFile(WAV_HEADER* header, char *filename);
 
-#endif //LAB_1_WAVE_H
+#endif

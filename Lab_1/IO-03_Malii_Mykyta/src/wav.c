@@ -6,21 +6,20 @@
 #endif
 #define FOUR_BYTES 4
 #define TWO_BYTES 2
+#define VOLUME_CHANGE_VALUE 3
+#define WAV_FILE_HEADER_SIZE 44
 
-FILE* file;
+
 
 WAV_HEADER* openFile(char* filename) {
 
     WAV_HEADER* header = (WAV_HEADER*)malloc(sizeof(WAV_HEADER));
 
-    file = fopen(filename, "rb");
+    FILE* file = fopen(filename, "rb");
     if(file == NULL){
         printf("File not found");
         exit(1);
     }
-
-    uint64_t file_size = ftell(file);
-    header->dataSize = (uint8_t*) malloc(file_size)
 
     // RIFF
     fread((&header->id), 1, FOUR_BYTES, file);
@@ -41,7 +40,11 @@ WAV_HEADER* openFile(char* filename) {
     fread((&header->subchunk2Id), 1, FOUR_BYTES, file);
     fread((&header->subchunk2Size), 1, FOUR_BYTES, file);
 
+    header->wavData = (uint8_t*)malloc(header->subchunk2Size);
+    fread(header->wavData, header->subchunk2Size, 1, file);
 
+
+    fclose(file);
 
     printf("\nThe RIFF chunk descriptor\n");
 
@@ -110,6 +113,27 @@ WAV_HEADER* openFile(char* filename) {
 
     printf("Size of each sample: %u \n", (header->numChannels * header->bitsPerSample) / 8);
 
-    fclose(file);
     return header;
+}
+
+
+void changeVolume(WAV_HEADER* header, bool riseUp){
+
+    for (uint32_t i = 0; i < header->subchunk2Size; i++){
+        if(riseUp) {
+            header->wavData[i] = (int8_t)(header->wavData[i] * VOLUME_CHANGE_VALUE);
+        }
+        else{
+            header->wavData[i] = (int8_t)(header->wavData[i] / VOLUME_CHANGE_VALUE);
+        }
+    }
+}
+
+void saveInNewFile(WAV_HEADER* header, char *filename){
+    FILE *file = fopen(filename, "wb");
+
+    fwrite(header, WAV_FILE_HEADER_SIZE, 1, file);
+    fwrite(header->wavData, header->subchunk2Size, 1, file);
+
+    fclose(file);
 }
