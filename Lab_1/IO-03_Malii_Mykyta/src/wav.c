@@ -22,25 +22,25 @@ WAV_HEADER* openFile(char* filename) {
     }
 
     // RIFF
-    fread((&header->id), 1, FOUR_BYTES, file);
-    fread((&header->size), 1, FOUR_BYTES, file);
-    fread((&header->format), 1, FOUR_BYTES, file);
+    fread((&header->id), FOUR_BYTES, 1, file);
+    fread((&header->size), FOUR_BYTES, 1, file);
+    fread((&header->format), FOUR_BYTES, 1, file);
 
     //The fmt sub-chunk
-    fread((&header->subchunk1Id), 1, FOUR_BYTES, file);
-    fread((&header->subchunk1Size), 1, FOUR_BYTES, file);
-    fread((&header->audioFormat), 1, TWO_BYTES, file);
-    fread((&header->numChannels), 1, TWO_BYTES, file);
-    fread((&header->sampleRate), 1, FOUR_BYTES, file);
-    fread((&header->byteRate), 1, FOUR_BYTES, file);
-    fread((&header->blockAlign), 1, TWO_BYTES, file);
-    fread((&header->bitsPerSample), 1, TWO_BYTES, file);
+    fread((&header->subchunk1Id), FOUR_BYTES, 1, file);
+    fread((&header->subchunk1Size), FOUR_BYTES, 1, file);
+    fread((&header->audioFormat), TWO_BYTES, 1, file);
+    fread((&header->numChannels), TWO_BYTES, 1, file);
+    fread((&header->sampleRate), FOUR_BYTES, 1, file);
+    fread((&header->byteRate), FOUR_BYTES, 1, file);
+    fread((&header->blockAlign), TWO_BYTES, 1, file);
+    fread((&header->bitsPerSample), TWO_BYTES, 1, file);
 
     //The data sub-chunk
-    fread((&header->subchunk2Id), 1, FOUR_BYTES, file);
-    fread((&header->subchunk2Size), 1, FOUR_BYTES, file);
+    fread((&header->subchunk2Id), FOUR_BYTES, 1, file);
+    fread((&header->subchunk2Size), FOUR_BYTES, 1, file);
 
-    header->wavData = (uint8_t*)malloc(header->subchunk2Size);
+    header->wavData = (uint16_t*)malloc(header->subchunk2Size);
     fread(header->wavData, header->subchunk2Size, 1, file);
 
 
@@ -119,12 +119,14 @@ WAV_HEADER* openFile(char* filename) {
 
 void changeVolume(WAV_HEADER* header, bool riseUp){
 
-    for (uint32_t i = 0; i < header->subchunk2Size; i++){
+    int subchunkSize = header->subchunk2Size / sizeof(uint16_t);
+    double volumeChange = pow(10, (VOLUME_CHANGE_VALUE/10));
+    for (uint32_t i = 0; i < subchunkSize; i++){
         if(riseUp) {
-            header->wavData[i] = (int8_t)(header->wavData[i] * VOLUME_CHANGE_VALUE);
+            header->wavData[i] = (int16_t)(header->wavData[i] * volumeChange);
         }
         else{
-            header->wavData[i] = (int8_t)(header->wavData[i] / VOLUME_CHANGE_VALUE);
+            header->wavData[i] = (int16_t)(header->wavData[i] / volumeChange);
         }
     }
 }

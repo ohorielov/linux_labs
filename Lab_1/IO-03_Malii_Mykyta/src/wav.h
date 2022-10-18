@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <math.h>
 
 #ifndef LAB_1_WAVE_H
 #define LAB_1_WAVE_H
@@ -25,7 +26,7 @@ typedef struct{
 
     uint32_t subchunk2Id;
     uint32_t subchunk2Size;
-    uint8_t *wavData;
+    uint16_t *wavData;
 
 } WAV_HEADER;
 
