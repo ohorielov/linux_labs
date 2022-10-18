@@ -4,15 +4,15 @@
     #include <stdint.h>
     #include <stdbool.h>
 
-    struct wavRiff {
+    struct riffChunk {
         uint8_t chunkId[4];
         uint32_t chunkSize;
         uint8_t format[4];
     };
 
-    struct wavFmt {
+    struct fmtSubchunk {
         uint8_t subchunk1Id[4];
-        uint32_t sunchunk1Size;
+        uint32_t subchunk1Size;
         uint16_t audioFormat;
         uint16_t numChannels;
         uint32_t sampleRate;
@@ -21,16 +21,16 @@
         uint16_t bitsPerSample;
     };
 
-    struct wavDataHeader {
-        uint8_t sunchunk2Id[4];
+    struct dataSubchunk {
+        uint8_t subchunk2Id[4];
         uint32_t subchunk2Size;
         int8_t *wavData;
     };
 
     struct wav {
-        struct wavRiff riff;
-        struct wavFmt fmt;
-        struct wavDataHeader dataHeader;
+        struct riffChunk riff;
+        struct fmtSubchunk fmt;
+        struct dataSubchunk data;
     };
 
     struct wav* open_wav(const char* fileName);
