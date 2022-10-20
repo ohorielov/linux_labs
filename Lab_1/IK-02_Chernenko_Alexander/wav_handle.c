@@ -62,3 +62,25 @@ void wav_file_create(struct wav* someWav, const uint8_t* fileName) {
 
     fclose(wavFile);
 }
+
+void wav_print_header(struct wav* someWav) {
+    if (someWav == NULL) {
+        return;
+    }
+
+    CHAR_FIELD_PRINT("---RIFF---\nChunk id:", someWav->riff.chunkId); 
+    INT_FIELD_PRINT("Chunk size:", someWav->riff.chunkSize); 
+    CHAR_FIELD_PRINT("File format:", someWav->riff.format);
+
+    CHAR_FIELD_PRINT("---FMT---\nChunk id: ", someWav->fmt.subchunk1Id);
+    INT_FIELD_PRINT("Chunk size:", someWav->fmt.subchunk1Size);
+    INT_FIELD_PRINT("Audio format:", someWav->fmt.audioFormat);
+    INT_FIELD_PRINT("Channels number:", someWav->fmt.numChannels);
+    INT_FIELD_PRINT("Sample rate:", someWav->fmt.sampleRate);
+    INT_FIELD_PRINT("Byte rate:", someWav->fmt.byteRate);
+    INT_FIELD_PRINT("Block align:", someWav->fmt.blockAlign);
+    INT_FIELD_PRINT("Bits per sample:", someWav->fmt.bitsPerSample);
+
+    CHAR_FIELD_PRINT("---DATA HEADER---\nChunk id: ", someWav->dataHeader.subchunk2Id);
+    INT_FIELD_PRINT("Chunk size:", someWav->dataHeader.subchunk2Size);
+}

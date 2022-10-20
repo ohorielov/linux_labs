@@ -9,8 +9,11 @@
 int32_t main(int32_t argc, char *argv[]) {
     struct wav* music = wav_file_open("Master Of Puppets.wav");
  
+    wav_print_header(music);
+    
     wav_change_volume(music, 5, false);
     wav_file_create(music, "Master Of Puppets_changed.wav");
+
 
     free(music);
 
