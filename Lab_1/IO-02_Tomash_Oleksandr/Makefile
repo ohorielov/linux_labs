@@ -5,4 +5,4 @@ main.o : main.c
 header.o : header.c
 	gcc -c header.c -o header.o
 clean : 
-	rm wav_run out.wav *.o
+	rm wav_run edited.wav *.o
