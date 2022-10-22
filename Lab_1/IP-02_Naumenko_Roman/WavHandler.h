@@ -1,7 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <iostream>
 #include "Macroses.h"
 
 const int HEADER_SIZE = 44;

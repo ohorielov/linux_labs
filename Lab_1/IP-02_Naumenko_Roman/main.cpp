@@ -1,4 +1,3 @@
-#include <iostream>
 #include <string>
 #include "WavHandler.h"
 #include "Macroses.h"
@@ -8,7 +7,7 @@ int main(int argc, char** argv)
     if (argc < 4)
     {
         InfoLog("Some arguments are not specified.");
-        InfoLog("Example: ./main inputFile.txt outputFile.txt 0.4");
+        InfoLog("Example: ./main \"../Master Of Puppets.wav\" \"result.wav\"  0.4");
         return -1;
     }
 
