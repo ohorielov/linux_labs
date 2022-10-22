@@ -1,6 +1,6 @@
 # variables
 CC = g++
-OBJECTS = main.o WavManager.o
+OBJECTS = main.o WavHandler.o
 FLAGS = 
 
 # cmd args
@@ -16,11 +16,11 @@ endif
 main: $(OBJECTS)
 	$(CC) $(FLAGS) -o main $(OBJECTS)
  
-main.o: main.cpp WavManager.h
-	$(CC) $(FLAGS) -c main.cpp WavManager.h
+main.o: main.cpp WavHandler.h Macroses.h
+	$(CC) $(FLAGS) -c main.cpp WavHandler.h Macroses.h
 
-WavManager.o: WavManager.h WavManager.cpp LogMacros.h
-	$(CC) $(FLAGS) -c WavManager.h WavManager.cpp LogMacros.h
+WavHandler.o: WavHandler.h WavHandler.cpp Macroses.h
+	$(CC) $(FLAGS) -c WavHandler.h WavHandler.cpp Macroses.h
 
 # targets
 clean: 
