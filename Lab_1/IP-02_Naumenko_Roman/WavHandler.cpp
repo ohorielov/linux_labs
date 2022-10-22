@@ -5,7 +5,19 @@ int WavHandler::ScaleVolume(const char* inputFileName,
                             float scaleFactor)
 {
     FILE *input = fopen(inputFileName, "r");
+    if (input == nullptr)
+    {
+        DebugLog("Failed to open input file.");
+        return -1;
+    }
+
     FILE *output = fopen(outputFileName, "w");
+    if (output == nullptr)
+    {
+        DebugLog("Failed to open output file.");
+        return -1;
+    }
+
     BYTE header[HEADER_SIZE];
 
     fread(header, HEADER_SIZE, 1, input);
