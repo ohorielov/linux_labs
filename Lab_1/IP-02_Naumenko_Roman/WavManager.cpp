@@ -25,12 +25,20 @@ void WavManager::IncreaseVolume(const std::string& inputFileName, const std::str
         else if(data->size() == 0)
             DebugLog("File is empty");
 
+        // reading file header
+        std::memcpy((char*)&fileHeader, data->data(), sizeof(fileHeader));
+        InfoLog(fileHeader);
+
         // processing data
-        if (ReadHeader())
-            DebugLog("Failed to read header");
         if (ProcessData())
             DebugLog("An error occured while processing data.");
 
+        // writing data 
+        std::copy( 
+            data->begin(), 
+            data->end(),
+            std::ostreambuf_iterator<char>(outputFile));
+        
         inputFile.close();
         outputFile.close();
     }
@@ -38,11 +46,6 @@ void WavManager::IncreaseVolume(const std::string& inputFileName, const std::str
     {
         DebugLog(e.what());
     }
-}
-
-int WavManager::ReadHeader()
-{
-    return 0;
 }
 
 int WavManager::ProcessData()

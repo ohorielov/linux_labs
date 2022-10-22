@@ -5,6 +5,7 @@
 #include <vector>
 #include <exception>
 #include <memory>
+#include <cstring>
 #include "LogMacros.h"
 
 class WavManager
