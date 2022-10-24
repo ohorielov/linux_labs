@@ -20,7 +20,7 @@ typedef struct {
 	uint32_t subchunk2_id;
 	uint32_t subchunk2_size;
 
-	int16_t *data;
+	uint16_t *data;
 } wav_header;
 
 #endif

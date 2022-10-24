@@ -71,7 +71,7 @@ void dump_wav(wav_header *wav) {
 	printf("Subchunk 2 size: %u\n", wav->subchunk2_size);
 }
 
-void strengthen_wav(wav_header *wav, float scale) {
+void adjust_wav(wav_header *wav, float scale) {
 	int samples_count = wav->subchunk2_size / sizeof(int16_t);
 
 	for(int i = 0; i < samples_count; i++) {

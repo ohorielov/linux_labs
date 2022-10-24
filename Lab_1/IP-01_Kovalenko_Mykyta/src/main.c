@@ -6,7 +6,7 @@ int main(void) {
 	wav_header *header = malloc(sizeof *header);
 	load_wav("../Master Of Puppets.wav", header);
 	dump_wav(header);
-	strengthen_wav(header, 0.75);
+	adjust_wav(header, 0.75);
 	write_wav("../build/Master Of Puppets - Remastered.wav", header);
 	free(header->data);
 	free(header);
