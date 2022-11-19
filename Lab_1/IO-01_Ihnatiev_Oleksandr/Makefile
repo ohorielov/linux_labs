@@ -4,7 +4,7 @@ NAME = WAVchanger
 all: $(NAME)
 
 WAVchanger: $(OBJ)
-	gcc $(OBJ) -o $(NAME)
+	gcc $(OBJ) -lm -o $(NAME)
 
 .c.o:
 	gcc -c WAVchanger.c -o $(OBJ)
