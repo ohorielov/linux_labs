@@ -6,6 +6,10 @@
 #include <math.h>
 #include <string.h>
 
+#define COPY(x, y) memcpy(&_##x, testData + a, y); a += y
+#define PRINTD(x, y) printf(#x ": %d\n", _##y)
+#define PRINTS(x, y) printf(#x ": %s\n", _##y)
+
 struct WAVheader
 {
 	char cID[5];
@@ -21,14 +25,14 @@ struct WAVheader
         short int bitsPerSample;
 	char s2ID[5];
 	long int s2Size;
-}header;
+}_header;
 
 int main(int argc, char *argv[])
 {
-	header.cID[4] = 0;
-	header.format[4] = 0;
-	header.s1ID[4] = 0;
-	header.s2ID[4] = 0;
+	_header.cID[4] = 0;
+	_header.format[4] = 0;
+	_header.s1ID[4] = 0;
+	_header.s2ID[4] = 0;
 	/*if (argc > 4 || argc < 3)
 	{
 		printf("Error, uncorrect input!\nCorrect input:\"%s inputFileName outputFileName [-a or -d]\"", argv[0]);
@@ -55,65 +59,70 @@ int main(int argc, char *argv[])
 	}
 	char* testData = malloc(sizeof(char) * (100));
 	fread(testData, sizeof(char), (size_t) 20, inFD);
-        memcpy(&header.cID, testData, 4);
+        memcpy(&_header.cID, testData, 4);
         int a = 4;
-        memcpy(&header.cSize, testData + a, 4);
-        a += 4;
-        memcpy(&header.format, testData + a, 4);
-        a += 4;
-        memcpy(&header.s1ID, testData + a, 4);
-        a += 4;
-        memcpy(&header.s1Size, testData + a, 4);
-        a += 4;
-        if (header.s1Size != 16)
+        COPY(header.cSize, 4);
+        COPY(header.format, 4);
+        COPY(header.s1ID, 4);
+        COPY(header.s1Size, 4);
+        if (_header.s1Size != 16)
         {
-        	fread(testData + a, sizeof(char), (size_t) header.s1Size + 8, inFD);
-        	a += header.s1Size;
+        	fread(testData + a, sizeof(char), (size_t) _header.s1Size + 8, inFD);
+        	a += _header.s1Size;
         }
         else
         {
-        	fread(testData + a, sizeof(char), (size_t) header.s1Size + 8, inFD);
-        	memcpy(&header.aFormat, testData + a, 2); 
-        	a += 2;        
-        	memcpy(&header.nChannels, testData + a, 2);
-        	a += 2;
-        	memcpy(&header.sampleR, testData + a, 4);
-        	a += 4;
-        	memcpy(&header.byteR, testData + a, 4);
-        	a += 4;
-        	memcpy(&header.blockAlign, testData + a, 2);
-        	a += 2;
-        	memcpy(&header.bitsPerSample, testData + a, 2);
-        	a += 2;
-        	
+        	fread(testData + a, sizeof(char), (size_t) _header.s1Size + 8, inFD);
+        	COPY(header.aFormat, 2);
+        	COPY(header.nChannels, 2);
+        	COPY(header.sampleR, 4);
+        	COPY(header.byteR, 4);
+        	COPY(header.blockAlign, 2);
+        	COPY(header.bitsPerSample, 2); 	
         }
-        memcpy(&header.s2ID, testData + a, 4);
-        a += 4;
-        memcpy(&header.s2Size, testData + a, 4); 
-        a += 4;      
+        COPY(header.s2ID, 4);
+        COPY(header.s2Size, 4);  
         free(testData);
         if (a == 44)
         {
-        	printf("ChunkID: %s;\nChunkSize: %d;\nFormat: %s;\nSubchunk1ID: %s;\nSubchunk1Size: %d;\nAudioFormat: %d;\nNumChannels: %d;\nSampleRate: %d;\nByteRate: %d;\nBlockAlign: %d;\nBitsPerSample: %d;\nSubchunk2ID: %s;\nSubchunk2Size: %d.\n", header.cID, header.cSize, header.format, header.s1ID, header.s1Size, header.aFormat, header.nChannels, header.sampleR, header.byteR, header.blockAlign, header.bitsPerSample, header.s2ID, header.s2Size);
+        	PRINTS(ChankID, header.cID);
+        	PRINTD(ChankSize, header.cSize);
+        	PRINTS(Format, header.format);
+        	PRINTS(Subchank1ID, header.s1ID);
+        	PRINTD(Subchank1Size, header.s1Size);
+        	PRINTD(AudioFormat, header.aFormat);
+        	PRINTD(NumChannels, header.nChannels);
+        	PRINTD(SampleRate, header.sampleR);
+        	PRINTD(ByteRate, header.byteR);
+        	PRINTD(BlockAlign, header.blockAlign);
+        	PRINTD(BitsPerSample, header.bitsPerSample);
         }
         else
         {
-        	printf("Unnormal header!\nChunkID: %s;\nChunkSize: %d;\nFormat: %s;\nSubchunk1ID: %s;\nSubchunk1Size: %d;\nSubchunk2ID: %s;\nSubchunk2Size: %d.\n", header.cID, header.cSize, header.format, header.s1ID, header.s1Size, header.s2ID, header.s2Size);
+        	
+        	printf("Unnormal header!\n");
+        	PRINTS(ChankID, header.cID);
+        	PRINTD(ChankSize, header.cSize);
+        	PRINTS(Format, header.format);
+        	PRINTS(Subchank1ID, header.s1ID);
+        	PRINTD(Subchank1Size, header.s1Size);
         }
+        PRINTS(Subchank2ID, header.s2ID);
+        PRINTD(Subchank2Size, header.s2Size);
         if (fseek(inFD, 0, SEEK_SET) != 0)
         {
         	printf("Error when reading file!");// %s!\n", argv[1]);
                 exit(-1);
         }
-	char* readedData = malloc(sizeof(char) * (header.cSize + 8));
-	char* writeData = malloc(sizeof(char) * (header.cSize + 8));
-	fread(readedData, sizeof(char), (size_t) (header.cSize + 8), inFD);
+	char* readedData = malloc(sizeof(char) * (_header.cSize + 8));
+	char* writeData = malloc(sizeof(char) * (_header.cSize + 8));
+	fread(readedData, sizeof(char), (size_t) (_header.cSize + 8), inFD);
 	fclose(inFD);
 	for(int i = 0; i < a; i++)
 	{
 		writeData[i] = readedData[i];
 	}
-	for(int i = a; i < header.s2Size; i++)
+	for(int i = a; i < _header.s2Size; i++)
 	{
 		writeData[i] = readedData[i] * pow(10, 0.05 * change);							
 	}
@@ -125,7 +134,7 @@ int main(int argc, char *argv[])
 		printf("Error when opening file!");// %s!\n", argv[2]);
                 exit(-1);
 	}
-	fwrite(writeData, sizeof(char), (size_t) (header.cSize + 8), inFD);
+	fwrite(writeData, sizeof(char), (size_t) (_header.cSize + 8), inFD);
 	free(writeData);
 	fclose(outFD);
 	return 0;
