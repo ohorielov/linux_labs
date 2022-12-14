@@ -4,28 +4,29 @@
 #include <fcntl.h>
 #include <malloc.h>
 #include <math.h>
+#include <stdint.h>
 #include <string.h>
 
 struct WAVHeader
 {
 	//RIFF chunk description
-	long int chunkID;
-	long int chunkSize;
-	long int format;
+	uint32_t chunkID;
+	uint32_t chunkSize;
+	uint32_t format;
 
 	//fmt sub-chunk
-	long int subchunk1ID;
-	long int subchunk1Size;
-	short int audioFormat;
-	short int numChannels;
-	long int sampleRate;
-	long int byteRate;
-	short int blockAlign;
-	short int bitsPerSample;
+	uint32_t subchunk1ID;
+	uint32_t subchunk1Size;
+	uint16_t audioFormat;
+	uint16_t numChannels;
+	uint32_t sampleRate;
+	uint32_t byteRate;
+	uint16_t blockAlign;
+	uint16_t bitsPerSample;
 
 	//data
-	long int subchunk2ID;
-	long int subchunk2Size;
+	uint32_t subchunk2ID;
+	uint32_t subchunk2Size;
 };
 
 int main(int argc, char *argv[])
@@ -33,7 +34,7 @@ int main(int argc, char *argv[])
 	char* inputoutputWAV = "./../Master Of Puppets.wav";
 	char* outputoutputWAV = "./../Output.wav";
 	struct WAVHeader header;
-	short int* data;
+	uint16_t* data;
 	float scale = 1.4;
 
 	if(argc < 2)
@@ -66,11 +67,11 @@ int main(int argc, char *argv[])
 
 	printf("Amplifying '%s' with scale %.2f\n", inputoutputWAV, scale);
 	//Amplify wav
-	int samplesCount = header.subchunk2Size / sizeof(short int);
+	int samplesCount = header.subchunk2Size / sizeof(int16_t);
 	for(int i = 0; i < samplesCount; i++)
 	{
-		short int sample = *(data + i);
-		sample = (short int)(sample * scale);
+		int16_t sample = *(data + i);
+		sample = (int16_t)(sample * scale);
 		data[i] = sample;
 	}
 
