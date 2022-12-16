@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "wavhandler.h": "c",
+        "stdio.h": "c"
+    }
+}
