@@ -129,6 +129,7 @@ void WriteNewFile(WAV_Struct wav_struct)
     FILE* new_file = fopen(filename.c_str(), "wb");
 
     //Writing header
+    fwrite(wav_struct.ChunkID, sizeof(wav_struct.ChunkID), 1, new_file);
     fwrite(&wav_struct.ChunkSize, sizeof(wav_struct.ChunkSize), 1, new_file);
     fwrite(wav_struct.Format, sizeof(wav_struct.Format), 1, new_file);
 
