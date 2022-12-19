@@ -66,13 +66,17 @@ int main()
 			cout << "Variable = " << env_var[i] << ", Value= " << val << endl;
             env_val[i] = val;
         }
-		else
+		else {
 			cout << env_var[i] << " doesn't exist, using default Value= " << default_env_val[i] << endl;
             env_val[i] = (char*)default_env_val[i];
+        }
 	}
     char* FILE_NAME = env_val[0];
     char* NEW_FILE_NAME = env_val[1];
     double k = stod(env_val[2]);
+    if (k < 0.1 || k > 1.5) {
+        throw invalid_argument("VOLUME_K is out of scope");
+    }
     WavParsed parsed = readFile(FILE_NAME);
     // printWavHeader(*parsed.metadata->header);
     updateFileData(parsed.data, parsed.metadata, k);
