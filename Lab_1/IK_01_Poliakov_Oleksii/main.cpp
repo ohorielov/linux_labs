@@ -55,20 +55,25 @@ void updateFileData (int16_t* wavData, WavMetadata metadata, double k);
 
 int main()
 {
-	char* FILE_NAME = getenv("FILE_NAME");
-    if (FILE_NAME == NULL)
-    {
-        cout << "FILE_NAME is not defined" << endl;
-        return 0;
-    }
-    else
-    {
-        cout << "FILE_NAME = " << FILE_NAME << endl;
-    }
-    WavParsed parsed = readFile(FILE_NAME);
+    const char *env_var[3] = {"FILE_NAME","NEW_FILE_NAME","VOLUME_K"};
+	const char *default_env_val[3] = {"../Master Of Puppets.wav","new.wav","0.5"};
+    char *env_val[3] = {};
 
-    char* NEW_FILE_NAME = "new.wav";
-    double k = 0.5;
+	for(int i=0; i<3; i++)
+	{
+		char* val = getenv(env_var[i]);
+		if (val != NULL) {
+			cout << "Variable = " << env_var[i] << ", Value= " << val << endl;
+            env_val[i] = val;
+        }
+		else
+			cout << env_var[i] << " doesn't exist, using default Value= " << default_env_val[i] << endl;
+            env_val[i] = (char*)default_env_val[i];
+	}
+    char* FILE_NAME = env_val[0];
+    char* NEW_FILE_NAME = env_val[1];
+    double k = stod(env_val[2]);
+    WavParsed parsed = readFile(FILE_NAME);
     // printWavHeader(*parsed.metadata->header);
     updateFileData(parsed.data, parsed.metadata, k);
     writeFile(NEW_FILE_NAME, parsed);
