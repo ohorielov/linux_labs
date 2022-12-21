@@ -19,8 +19,6 @@ typedef struct {
 
 	uint32_t subchunk2_id;
 	uint32_t subchunk2_size;
-
-	uint16_t *data;
 } wav_header;
 
 #endif
