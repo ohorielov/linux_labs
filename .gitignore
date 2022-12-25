@@ -1,6 +1,5 @@
 ### C ###
-*.exe
-Lab_1/build/*
+**/build/*
 
 ### VisualStudioCode ###
 .vscode/*
