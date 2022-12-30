@@ -1,21 +1,23 @@
 #include <stdio.h>
 
-typedef struct wav_header{
+struct wav_header{
+    int32_t *fmtSubChunk;
+
 	//RIFF
-	size_t ChunkID;
-	size_t ChunkSize;
-	size_t Format;
+	char ChunkID[4];
+	int32_t ChunkSize;
+	char Format[4];
 	//WAVE
-	size_t Subchunk1ID;
-	size_t Subchunk1Size;
-	size_t AudioFormat;
-	size_t NumChannel;
-	size_t SampleRate;
-	size_t ByteRate;
-	size_t BlockAlign;
-	size_t BitsPerSample;
+	char Subchunk1ID[4];
+	int32_t Subchunk1Size;
+	int16_t AudioFormat;
+	int16_t NumChannel;
+	int32_t SampleRate;
+	int32_t ByteRate;
+	int16_t BlockAlign;
+	int16_t BitsPerSample;
 		//data
-	size_t Subchunk2ID;
-	size_t Subchunk2Size;
-	short* data;
+	char Subchunk2ID[4];
+	int32_t Subchunk2Size;
+	int16_t *data;
 };
