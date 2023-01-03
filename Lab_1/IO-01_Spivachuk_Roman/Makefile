@@ -7,8 +7,9 @@ SOURCES = *.c
 all: $(BINARY)
 
 $(BINARY): $(SOURCES)
-	gcc $^ -o $(BINARY)
+	$(CC) $^ -o $(BINARY)
 
 .PHONY: clear
 clear:
 	rm -rf $(BINARY) *.o
+	

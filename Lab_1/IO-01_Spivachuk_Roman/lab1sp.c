@@ -3,12 +3,12 @@
 #include <stdlib.h>
 #include "lab1sp.h"
 
-struct header_struct {
-    char chunk_id[4];
+struct __attribute__((packed)) header_struct {
+    char chunk_id[FOUR_BYTES_FIELD];
     uint32_t chunk_size;
-    char format[4];
+    char format[FOUR_BYTES_FIELD];
 
-    char subchunk1_id[4];
+    char subchunk1_id[FOUR_BYTES_FIELD];
     uint32_t subchunk1_size;
     uint16_t audio_format;
     uint16_t num_channels;
@@ -17,7 +17,7 @@ struct header_struct {
     uint16_t block_align;
     uint16_t bits_per_sample;
 
-    char subchunk2_id[4];
+    char subchunk2_id[FOUR_BYTES_FIELD];
     uint32_t subchunk2_size;
 };
 
@@ -58,7 +58,6 @@ FILE* read_wav_file(char* fileName) {
     printf("Subchunk 2 size: %u\n", file_header->header.subchunk2_size);
 
     printf("\nChanging volume of wav file\n");
-
     return wav_ptr;
 }
 
@@ -77,10 +76,11 @@ FILE* write_edited_data(char* fileName, FILE* dataSource, float changeValue) {
 
     // writing edited data to new file
     uint16_t buffer;
-    while (fread(&buffer, 2, 1, dataSource)) {
+    while (fread(&buffer, SIZE_OF_CHUNK, NUM_OF_CHUNKS, dataSource)) {
         buffer = buffer * (float)changeValue;
-        fwrite(&buffer, 2, 1, edited_wav);
+        fwrite(&buffer, SIZE_OF_CHUNK, NUM_OF_CHUNKS, edited_wav);
     }
-
+	free(file_header);
     return edited_wav;
 }
+
