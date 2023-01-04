@@ -64,12 +64,12 @@ int main(void){
                     dataSubChunk = malloc(wh.Subchunk2Size);
                     fread(dataSubChunk, wh.Subchunk2Size, 1, wav_file);
 
-                    wh.data = malloc(wh.Subchunk2Size);
-                    wh.data = dataSubChunk;
-
                     for(int i = 0; i < wh.Subchunk2Size / 2; i++){
                         *(dataSubChunk + i) *= factor;
                     }
+
+                    wh.data = malloc(wh.Subchunk2Size);
+                    wh.data = dataSubChunk;
 
                     wh.AudioFormat = *(fmtSubChunk);
                     wh.NumChannel = *(fmtSubChunk) >> 16;
@@ -113,7 +113,7 @@ int main(void){
 
     for(int i = 0; i <= wh.Subchunk2Size / 2; i++){
         buffer2bytes = *(wh.data + i);
-        fwrite(&buffer2bytes, 2, 1, wav_file_vol_decr);
+            fwrite(&buffer2bytes, 2, 1, wav_file_vol_decr);
     }
 
     fclose(wav_file);
