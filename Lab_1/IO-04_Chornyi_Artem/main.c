@@ -106,7 +106,7 @@ int write(char* output_file_name, float volume_diff_value)
     // Writing edited raw data
     uint16_t volume_data;
 
-    for (int i = 0; i < audio_file.header.subchunk2_size / 2; i++)
+    for (int i = 0; i < audio_file.header.subchunk2_size / (audio_file.header.bits_per_sample / 8); i++)
     {
         volume_data = (audio_file.data[i]);
         volume_data = volume_data * pow(10, 0.01 * (float)volume_diff_value);
