@@ -49,9 +49,6 @@ void handleWAV(WAV* wav, const char* name)
     for (uint32_t i = 0; i < wav->dataSubChunk.subChunk2Size; ++i)
     {
         uint8_t tempVal = wav->dataSubChunk.data[i] * multiplier;
-        double newVal = round(tempVal);
-
-        tempVal = (uint8_t)newVal;
         fwrite(&tempVal, sizeof(uint8_t), 1, file);
     }
     
