@@ -62,9 +62,9 @@ void read(char* input_file_name)
     //Read the raw data inside the "data" sub-chunk
     audio_file.data = (uint16_t*) malloc((audio_file.header.subchunk2_size));
 
-    for (int i = 0; i < audio_file.header.subchunk2_size / 2; i++)
+    for (int i = 0; i < audio_file.header.subchunk2_size / (audio_file.header.bits_per_sample / 8); i++)
     {
-        fread(&audio_file.data[i], 2, 1, input_file_pointer);
+        fread(&audio_file.data[i], audio_file.header.bits_per_sample / 8, 1, input_file_pointer);
     }
 
     //Closing file read stream
@@ -119,6 +119,7 @@ int write(char* output_file_name, float volume_diff_value)
 
     return 1;
 }
+
 int main(int argc, char** argv) 
 {
     if (argc != 4) //The function takes n+1 parameters in the following order: incoming file, outgoing file, volume difference in dB
