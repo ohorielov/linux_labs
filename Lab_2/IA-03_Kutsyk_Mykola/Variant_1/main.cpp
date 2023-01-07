@@ -5,12 +5,18 @@
 #include <fstream>
 using namespace std;
 
+vector<bool> code;
+map<char, vector<bool> > table;
+
+
 class Node {
 
 	public:
 		int a;
 		char c;
 		Node* left, * right;
+
+		Node() {};
 
 		Node(Node* L, Node* R) {
 			left = L;
@@ -19,22 +25,21 @@ class Node {
 		}
 };
 
-struct MyCompare{
+struct MyCompare {
 	bool operator()(Node* l, Node* r) const {
 		return l->a < r->a;
 	}
-}
+};
 
-vector<bool> code;
-map<char, vector<bool> > table;
+
 
 void BuildTable(Node* root) {
-	if (root -> left != NULL){
+	if (root->left != NULL) {
 		code.push_back(0);
 		BuildTable(root->left);
 	}
 
-	if (root-> right != NULL) {
+	if (root->right != NULL) {
 		code.push_back(1);
 		BuildTable(root->right);
 	}
@@ -43,10 +48,14 @@ void BuildTable(Node* root) {
 
 	code.pop_back();
 
-}
+};
+
+
 
 int main (){
 	
+	
+
 	ifstream f("non_compressed_text.txt");
 	
 	map<char, int> m;
