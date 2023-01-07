@@ -1,8 +1,5 @@
 #include "wav_edit.h"
 
-#define in_file "../Master Of Puppets.wav"
-#define res_file "../Master Of Puppets(edited).wav"
-
 void read_wav(FILE* file, struct WavHeader* wav_h) {
 
     fread(&wav_h->riff.chunk_id, 4, 1, file);
@@ -27,14 +24,6 @@ void read_wav(FILE* file, struct WavHeader* wav_h) {
 }
 
 void write_wav(FILE* file, struct WavHeader *wav_h) {
-
-FILE *file_input = fopen(in_file, "rb")
-if(input == NULL){
-printf("File not found");
-return 0;
-}
-
-
 	fwrite(&wav_h->riff.chunk_id, 4, 1, file);
 	fwrite(&wav_h->riff.chunk_size, 4, 1, file);
 	fwrite(&wav_h->riff.format, 4, 1, file);
@@ -54,16 +43,6 @@ return 0;
 
 	fclose(file);
 }
-
-int wav_output(struct WavHeader *wav_h){
-FILE *out_data=fopen(res_file, "wb");
-
-if (out_data == NULL){
-printf("FILE WASN`T CREATED");
-return 0;
-}
-
-
 
 void print(struct WavHeader *wav_h) {
     printf("Riff: %s\n", wav_h->riff.chunk_id);
