@@ -120,21 +120,21 @@ int main (){
 	g.close();
 	f.close();
 
-	/*ifstream F("output.bin");
+	ifstream F("output.bin");
 
 	Node *p = root;
 	count = 0; char byte;
 	byte = F.get();
 	while (!F.eof()){
-		bool b = byty & (1 << (7 - count) );
+		bool b = byte & (1 << (7 - count) );
 		if (b) p = p->right; else p = p->left;
-		if (p->left == Null && p->right == Null) {
+		if (p-> left == NULL && p->right == NULL) {
 			cout << p->c; p = root;
 		}
 		if (count == 8) { count = 0; F >> byte; }
 	}
 
-	F.close();*/
+	F.close();
 
 	return 0;
 }
