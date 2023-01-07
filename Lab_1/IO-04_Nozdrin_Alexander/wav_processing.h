@@ -20,9 +20,7 @@ struct Wav_header {
 };
 
 
-void volume_change(float percent, struct Wav_header *wav);
-
-void read_wav(const char *filename, struct Wav_header *wav);
-
-void write_wav(const char *filename, struct Wav_header *wav);
+void edit_volume(float percent, struct Wav_header *wav);
+void read_wav_file(const char *filename, struct Wav_header *wav);
+void write_wav_file(const char *filename, struct Wav_header *wav);
 
