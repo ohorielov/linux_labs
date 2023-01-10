@@ -163,16 +163,22 @@ void writeFile(char *filePath, WavParsed parsed)
     fclose(wavFile);
 }
 
+WavMetadata* createWavMetadata(WavHeader* wavHeader)
+{
+    WavMetadata* metadata = (WavMetadata*)malloc(sizeof(WavMetadata));
+    metadata->header = wavHeader;
+    metadata->bytesPerSample = wavHeader->bitsPerSample / 8;
+    metadata->samplesCount = wavHeader->ChunkSize / metadata->bytesPerSample;
+    return metadata;
+}
+
 WavParsed readFile(char *filePath)
 {
     FILE *wavFile = fopen(filePath, "rb");
     WavHeader* wavHeader = readFileHeader(wavFile);
     uint16_t bytesPerSample = wavHeader->bitsPerSample / 8;
     uint64_t numSamples = wavHeader->ChunkSize / bytesPerSample;
-    WavMetadata* metadata = (WavMetadata*)malloc(sizeof(WavMetadata));
-    metadata->header = wavHeader;
-    metadata->bytesPerSample = bytesPerSample;
-    metadata->samplesCount = numSamples;
+    WavMetadata* metadata = createWavMetadata(wavHeader);
     int16_t *wavData = readFileData(wavFile, metadata);
     fclose(wavFile);
     WavParsed parsed;
