@@ -1,8 +1,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]){
     FILE *input = fopen("input.wav", "r");
     FILE *output = fopen("output.wav", "w");
     uint8_t headerbuffer[44];
