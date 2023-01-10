@@ -35,24 +35,25 @@ typedef struct WAV_HEADER
 
 typedef struct WAV_METADATA
 {
-    WavHeader header;
+    WavHeader* header;
     uint16_t bytesPerSample;
     uint64_t samplesCount;
 } WavMetadata;
 
 typedef struct WAV_PARSED
 {
-    WavMetadata metadata;
+    WavMetadata* metadata;
     int16_t *data;
 } WavParsed;
 
 // Function prototypes
-void printWavHeader(WavHeader wavHeader);
-WavHeader readFileHeader(FILE *wavFile);
-int16_t *readFileData(FILE *wavFile, WavMetadata metadata);
+void printWavHeader(WavHeader* wavHeader);
+WavHeader* readFileHeader(FILE *wavFile);
+int16_t *readFileData(FILE *wavFile, WavMetadata* metadata);
 WavParsed readFile(char *fileName);
 void writeFile(char *filePath, WavParsed parsed);
-void updateFileData(int16_t *wavData, WavMetadata metadata, double k);
+void updateFileData(int16_t *wavData, WavMetadata* metadata, double k);
+void freeWavParsed(WavParsed parsed);
 
 int main()
 {
@@ -85,6 +86,7 @@ int main()
     // printWavHeader(*parsed.metadata->header);
     updateFileData(parsed.data, parsed.metadata, k);
     writeFile(NEW_FILE_NAME, parsed);
+    freeWavParsed(parsed);
 }
 
 void printWavHeader(WavHeader wavHeader)
@@ -107,9 +109,9 @@ void printWavHeader(WavHeader wavHeader)
     cout << "Data string                :" << wavHeader.Subchunk2ID[0] << wavHeader.Subchunk2ID[1] << wavHeader.Subchunk2ID[2] << wavHeader.Subchunk2ID[3] << endl;
 }
 
-WavHeader readFileHeader(FILE *wavFile)
+WavHeader* readFileHeader(FILE *wavFile)
 {
-    WavHeader wavHeader;
+    WavHeader* wavHeader = (WavHeader*)malloc(sizeof(WavHeader));
     int headerSize = sizeof(WavHeader), filelength = 0;
 
     if (wavFile == nullptr)
@@ -118,39 +120,39 @@ WavHeader readFileHeader(FILE *wavFile)
     }
 
     // Read the header
-    size_t bytesRead = fread(&wavHeader, 1, headerSize, wavFile);
-    if (bytesRead != sizeof wavHeader)
+    size_t bytesRead = fread(wavHeader, 1, headerSize, wavFile);
+    if (bytesRead != sizeof *wavHeader)
     {
         throw invalid_argument("Unable to read wav file header");
     }
     return wavHeader;
 }
 
-int16_t *readFileData(FILE *wavFile, WavMetadata metadata)
+int16_t *readFileData(FILE *wavFile, WavMetadata* metadata)
 {
-    int16_t *wavData = new int16_t[metadata.samplesCount];
-    size_t f = fread(wavData, metadata.bytesPerSample, metadata.samplesCount, wavFile);
+    int16_t *wavData = new int16_t[metadata->samplesCount];
+    size_t f = fread(wavData, metadata->bytesPerSample, metadata->samplesCount, wavFile);
     return wavData;
 }
 
-void updateFileData(int16_t *wavData, WavMetadata metadata, double k)
+void updateFileData(int16_t *wavData, WavMetadata* metadata, double k)
 {
     int i = 0;
-    while (i < metadata.samplesCount)
+    while (i < metadata->samplesCount)
     {
         wavData[i] = (int16_t)(wavData[i] * k);
         i++;
     }
 }
 
-void writeHeader(FILE *wavFile, WavMetadata metadata)
+void writeHeader(FILE *wavFile, WavMetadata* metadata)
 {
-    fwrite(&metadata.header, sizeof(WavHeader), 1, wavFile);
+    fwrite(metadata->header, sizeof(WavHeader), 1, wavFile);
 }
 
-void writeFileData(FILE *wavFile, int16_t *wavData, WavMetadata metadata)
+void writeFileData(FILE *wavFile, int16_t *wavData, WavMetadata* metadata)
 {
-    fwrite(wavData, metadata.bytesPerSample, metadata.samplesCount, wavFile);
+    fwrite(wavData, metadata->bytesPerSample, metadata->samplesCount, wavFile);
 }
 
 void writeFile(char *filePath, WavParsed parsed)
@@ -164,17 +166,24 @@ void writeFile(char *filePath, WavParsed parsed)
 WavParsed readFile(char *filePath)
 {
     FILE *wavFile = fopen(filePath, "rb");
-    WavHeader wavHeader = readFileHeader(wavFile);
-    uint16_t bytesPerSample = wavHeader.bitsPerSample / 8;
-    uint64_t numSamples = wavHeader.ChunkSize / bytesPerSample;
-    WavMetadata metadata;
-    metadata.header = wavHeader;
-    metadata.bytesPerSample = bytesPerSample;
-    metadata.samplesCount = numSamples;
+    WavHeader* wavHeader = readFileHeader(wavFile);
+    uint16_t bytesPerSample = wavHeader->bitsPerSample / 8;
+    uint64_t numSamples = wavHeader->ChunkSize / bytesPerSample;
+    WavMetadata* metadata = (WavMetadata*)malloc(sizeof(WavMetadata));
+    metadata->header = wavHeader;
+    metadata->bytesPerSample = bytesPerSample;
+    metadata->samplesCount = numSamples;
     int16_t *wavData = readFileData(wavFile, metadata);
     fclose(wavFile);
     WavParsed parsed;
     parsed.metadata = metadata;
     parsed.data = wavData;
     return parsed;
+}
+
+void freeWavParsed(WavParsed parsed)
+{
+    free(parsed.metadata->header);
+    free(parsed.metadata);
+    free(parsed.data);
 }
