@@ -1,0 +1,5 @@
+.metadata/
+.settings/
+.vs/
+*.cproject
+*.project
