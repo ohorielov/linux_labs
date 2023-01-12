@@ -11,6 +11,23 @@ typedef struct symbol_and_count {
     int count;
 } SAC;
 
+typedef struct symbol_and_code{
+    char symbol;
+    code *code;
+} symbol_and_code;
+
+code* search_in_list(symbol_and_code symbol_code[], int n, char ch){
+    code* searched_code;
+    for (int i = 0; i < n; i++){
+        searched_code = symbol_code[i].code;
+        if (symbol_code[i].symbol == ch){
+            break;
+        }
+    }
+    
+    return searched_code;
+}
+
 int cmpfunc(const void * a, const void * b){
 
     SAC * str_a = (SAC *) a;
@@ -26,12 +43,9 @@ int hasCode(tree_node *tree, code **code_head, char ch) {
 
     if (!tree) return false;
 
-    printf("branch: %c, symbol tree: %c\n", tree->branch, tree->symbol);
-
     *code_head = insertLast(tree->branch, *code_head);
-    
+  
     if (tree->symbol == ch) {
-        printf("found, quiting\n");
         return true;
     }
     if(tree->left){
@@ -45,7 +59,6 @@ int hasCode(tree_node *tree, code **code_head, char ch) {
         }
     }
     
-    codePrint(*code_head);
     deleteLast(*code_head);
     
     return false;
@@ -56,10 +69,14 @@ int main(void){
     // struct node *current = NULL;
 
     FILE *non_comp_file = fopen("../non_compressed_text.txt", "r");
+    FILE *comp_file = fopen("../compressed_text.txt", "wb");
 
     char ch;
     short symbols_counter;
     unsigned Freq[256];
+    int bits = 0;
+
+    int *coded_text;
     
     char *non_comp_text;
 
@@ -67,26 +84,9 @@ int main(void){
         symbols_counter += 1;
     }
 
-    // printf("\n%i\n", symbols_counter);
+    printf("\n%u\n", symbols_counter);
 
-    fclose(non_comp_file);
-
-    non_comp_file = fopen("../non_compressed_text.txt", "r");
-
-    non_comp_text = malloc(symbols_counter * sizeof(char));
-
-    for(int i = 0; i < symbols_counter; i++){
-        ch = fgetc(non_comp_file);
-        *(non_comp_text + i) = ch;
-    }
-
-    for(int i = 0; i < symbols_counter; i++){
-        printf("%c", *(non_comp_text + i));
-    }
-
-    fclose(non_comp_file);
-
-    non_comp_file = fopen("../non_compressed_text.txt", "r");
+    rewind(non_comp_file);
     
       /* Обнуление таблицы частот */
     memset(Freq, 0, 256 * sizeof(unsigned));
@@ -115,10 +115,16 @@ int main(void){
             sac.count = Freq[i];
             sac.symbol = (char)i;
             symbols_list[n] = sac;
-            // printf("Символ %c : %5u раз\n", i, Freq[i]);
+            //printf("Символ %c : %5u раз\n", i, Freq[i]);
             n++;
         }
-    }    
+    }
+
+    for(int i = 0; i < n; i++){
+        printf("Символ %c : %5u разів\n", symbols_list[i].symbol, symbols_list[i].count);
+    }
+
+    printf("\n");
 
     qsort(symbols_list, n, sizeof(SAC), cmpfunc);
 
@@ -126,25 +132,28 @@ int main(void){
         printf("Символ %c : %5u разів\n", symbols_list[i].symbol, symbols_list[i].count);
     }
 
-    fclose(non_comp_file);
-
     node *head = NULL;
     for(int i = 0; i < n; i++){
         head = insertFirst(symbols_list[i].symbol, symbols_list[i].count, head);
     }
 
+
+
+
     while(head->next){
         node *left = head;
         node *right = head->next;
 
-        tree_node *tree = (tree_node *)malloc(sizeof(tree_node));
+        tree_node *tree = malloc(sizeof(tree_node));
+
 
         tree->left = left->tree_node;
         tree->right = right->tree_node;
-        tree->symbol = '0';
+        tree->symbol = NULL;
 
-        tree->left->branch = '0';
-        tree->right->branch = '1';
+
+        tree->left->branch = 0;
+        tree->right->branch = 1;
 
         int count = left->count + right->count;
 
@@ -161,15 +170,96 @@ int main(void){
     }
 
     printf("\n");
-    printList(head);
-    printf("\n");
 
-    tree_node *tree = head->tree_node;
+    symbol_and_code symbol_code[n];
 
-    code *code_head = NULL;
-    hasCode(tree, &code_head, 'e');
+    for (int i = 0; i < n; i++){
+        code *code_head = NULL;
+        hasCode(head->tree_node, &code_head, symbols_list[i].symbol);
 
-    codePrint(code_head);
+        symbol_code[i].symbol = symbols_list[i].symbol;
+        symbol_code[i].code = code_head->next;
+
+        printf("symbol: %c, code: ", symbol_code[i].symbol);
+        codePrint(symbol_code[i].code);
+    }
+
+    // for (int i; i < n; i++){
+    //     printf("symbol: %c code: ", symbol_code[i].symbol);
+    //     codePrint(symbol_code[i].code);
+    // }
+
+    rewind(non_comp_file);
+
+    
+
+    for (int i = 0; i < symbols_counter; i++){
+
+        char symbol = fgetc(non_comp_file);
+
+        code* code_new = search_in_list(symbol_code, n, symbol);
+
+        int j = 0;
+        for(code *current = code_new; current != NULL; current = current->next) {
+            int s = current->symbol;
+            // fputc(current->symbol, comp_file);
+            printf("%u", current->symbol);
+            
+            // code_string[j] = current->symbol;
+            j++;
+        }
+
+        bits += codeLength(code_new);
+
+        //fputs(code_string, comp_file);
+        //fputc(' ', comp_file);
+
+        // codePrint(code_new);
+
+        // printf("%c", symbol);
+    }
+
+    rewind(non_comp_file);
+
+    printf("\n%u\n", bits);
+    printf("\n%u\n", bits / 8 + 1);
+
+    coded_text = (int *)malloc(bits / 8 + 1);
+
+    bits = 0;
+
+    for (int i = 0; i < symbols_counter; i++){
+
+        char symbol = fgetc(non_comp_file);
+
+        code* code_new = search_in_list(symbol_code, n, symbol);
+
+        code* code_without_minus = code_new->next;
+        code_new = code_without_minus;
+
+        int j = 0;
+        for(code *current = code_new; current != NULL; current = current->next) {
+            *(coded_text + bits) = current->symbol;
+            bits++;
+            //fputc(current->symbol, comp_file);
+            
+            // code_string[j] = current->symbol;
+            j++;
+        }
+
+    //     //fputs(code_string, comp_file);
+    //     //fputc(' ', comp_file);
+
+    //     // codePrint(code_new);
+    }    
+
+    write(&coded_text, 676, 1, comp_file);
+
+    
+    fclose(comp_file);
+
+    fclose(non_comp_file);
 
     return 0;
 }
+

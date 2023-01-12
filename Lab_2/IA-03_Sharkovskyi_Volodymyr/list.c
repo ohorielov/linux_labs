@@ -26,6 +26,7 @@ void printList(node *head) {
 //insert link at the first location
 struct node* insertFirst(char symbol, int count, node *head) {
    //create a link
+
    tree_node *tree = (tree_node *)malloc(sizeof(tree_node));
    node *link = (node*)malloc(sizeof(node));
 
@@ -35,12 +36,14 @@ struct node* insertFirst(char symbol, int count, node *head) {
    tree->branch = '-';
    link->tree_node = tree;
    link->count = count;
+   link->next = NULL;
 	
-   //point it to old first node
-   link->next = head;
-	
-   //point first to new first node
-   head = link;
+   if (head != NULL){
+      link->next = head;
+      head = link;
+   } else {
+      head = link;
+   }
 
    return head;
 }
@@ -75,7 +78,9 @@ node* deleteFirst(node *head) {
 
    free(head);
 
-   return link;
+   head = link;
+
+   return head;
 }
 
 //find a link with given key

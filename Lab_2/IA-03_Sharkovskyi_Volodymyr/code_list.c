@@ -4,16 +4,16 @@
 #include <stdbool.h>
 
 typedef struct code {
-   char symbol;
+   int symbol;
 
    struct code *next;
 } code;
 
 void codePrint(code *code_head){
-    printf("code print called\n");
     code *link = code_head;
+
     while(link){
-        printf("%c", link->symbol);
+        printf("%u", link->symbol);
         link = link->next;
     }
     printf("\n");
@@ -28,15 +28,12 @@ int codeLength(code *head) {
    return length;
 }
 
-code* insertLast(char symbol, code *code_head) {
+code* insertLast(int symbol, code *code_head) {
     code *new_code = (code *)malloc(sizeof(code));
     new_code->symbol = symbol;
-
-    printf("insert code symbol: %c, old code length: %d, ", symbol, codeLength(code_head));
-
-    if (!code_head) {
+    
+    if (code_head == NULL) {
         code_head = new_code;
-        printf("new code length: %d\n", codeLength(code_head));
         return code_head;
     }
 
@@ -45,8 +42,8 @@ code* insertLast(char symbol, code *code_head) {
     while (link->next) link = link->next;
 
     link->next = new_code;
+    link->next->next = NULL;
 
-    printf("new code length: %d\n", codeLength(code_head));
     return code_head;
 }
 
