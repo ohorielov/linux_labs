@@ -234,7 +234,7 @@ string decode_file(struct MinHeapNode* root, string s)
             curr = root; 
         } 
     } 
-    return ans+'\0'; 
+    return ans; 
 } 
 
 string readInputFile (string fileName) {
@@ -246,6 +246,21 @@ string readInputFile (string fileName) {
         str += line;
     }
     return str;
+}
+
+void validateDecoded (string original, string decoded) {
+    if (original.size() != decoded.size()) {
+        cout << "Decoded string is not the same as the original string" << endl;
+        return;
+    }
+    for (int i = 0; i < original.size(); i++) {
+        if (original[i] != decoded[i]) {
+            cout << "Decoded string is not the same as the original string" << endl;
+            cout << "Change at index " << i << endl;
+            return;
+        }
+    }
+    cout << "Decoded string is the same as the original string" << endl;
 }
 
 int main () {
@@ -263,6 +278,7 @@ int main () {
     MinHeapNode* root = findRoot(nodeVector);
 
     string decodedString = decode_file(root, encodedText); 
-    cout << "\nDecoded Huffman Data:\n" << decodedString << endl; 
+    // cout << "\nDecoded Huffman Data:\n" << decodedString << endl; 
+    validateDecoded(str, decodedString);
     return 0; 
 }
