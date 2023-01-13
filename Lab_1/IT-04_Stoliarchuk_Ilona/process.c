@@ -2,6 +2,7 @@
 #include "stdio.h"
 #include "stdint.h"
 #include "process.h"
+#include "math.h"
 
 
 int read(const char *filename, struct WavHeader *wav){
@@ -29,11 +30,12 @@ int read(const char *filename, struct WavHeader *wav){
 	return 0;
 }
 
-void edit(float a, struct WavHeader *wav){
+void edit(double a, struct WavHeader *wav){
+	double p = pow(10,a/10);
 	uint32_t samplesCount = wav->subchunk2Size / sizeof(int16_t);
 	for(int i = 0; i < samplesCount; i++) {
 		int16_t sample = wav->data[i];
-		sample = sample * a;
+		sample = sample * p;
 		wav->data[i] = sample;
 	}
 }

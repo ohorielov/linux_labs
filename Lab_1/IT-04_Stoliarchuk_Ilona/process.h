@@ -18,7 +18,7 @@ struct WavHeader {
       uint16_t* data;
     };
     int read(const char *filename, struct WavHeader *wav);
-    void edit(float a, struct WavHeader *wav);
+    void edit(double a, struct WavHeader *wav);
     void print(const char *filename, struct WavHeader *wav);
     int write(const char *filename, struct WavHeader *wav);
 

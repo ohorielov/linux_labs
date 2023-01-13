@@ -6,10 +6,11 @@ SRCDIR := ./
 all: main
 
 main: $(BUILDDIR)/process.o $(BUILDDIR)/main.o
-	$(CC) $^ -o $(BUILDDIR)/main
+	$(CC) $^ -o $(BUILDDIR)/main -lm
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 clean:
 	rm -rf $(BUILDDIR)/*
+	
