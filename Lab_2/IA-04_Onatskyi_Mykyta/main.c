@@ -37,7 +37,7 @@ void bubble_sort(char *arr[], int *freq[], int size) {
   }
 }
 
-void encode(char **code, FILE *inFilePtr, FILE *outFilePtr) {
+char *encode(char **code, FILE *inFilePtr, FILE *outFilePtr) {
   char symbol;
   char *resultBits = (char *) malloc(0);
 
@@ -58,7 +58,6 @@ void encode(char **code, FILE *inFilePtr, FILE *outFilePtr) {
     buffer[BITS_IN_BYTE] = '\0';
     for (int j = i, k = 0; j < i + BITS_IN_BYTE; j++, k++)
       buffer[k] = resultBits[j];
-    printf("%s", buffer);
     char byte = strtol(buffer, 0, 2);
     fputc(byte, outFilePtr);
   }
@@ -69,9 +68,9 @@ void encode(char **code, FILE *inFilePtr, FILE *outFilePtr) {
       buffer[j] = resultBits[i];
     }
     char byte = strtol(buffer, 0, 2);
-    printf("%s\n", buffer);
     fputc(byte, outFilePtr);
   }
+  return resultBits;
 }
 
 void addBits(char **bits, char symbol) {
@@ -80,7 +79,7 @@ void addBits(char **bits, char symbol) {
 
   //symbol to binary ?itoa?
   for (int i = 0; i < BITS_IN_BYTE; ++i) {
-    bitString[i] = '0' + (symbol>>(BITS_IN_BYTE-1-i)&1);
+    bitString[i] = '0' + (symbol >> (BITS_IN_BYTE - 1 - i) & 1);
   }
 
   char *buffer = (char *) malloc((strlen(*bits) + 1) * sizeof(char));
@@ -92,25 +91,38 @@ void addBits(char **bits, char symbol) {
 
 }
 
-//void decode(char **code, FILE *inFilePtr) {
-//  fseek(inFilePtr, 0, SEEK_END);
-//  size_t size = ftell(inFilePtr);         //calc the size needed
-//  fseek(inFilePtr, 0, SEEK_SET);
-//  char* buffer = malloc(size);  //allocalte space on heap
-//
-//  if (inFilePtr == NULL){
-//  printf("Error: There was an Error reading the file %s \n", path);
-//    exit(1);
-//  }
-//  else if (fread(&buffer, sizeof(unsigned int), size, inFilePtr) != size){
-//    printf("Error: There was an Error reading the file %s - %d\n", path, r);
-//    exit(1);
-//  }else{int i;
-//    for(i=0; i<size;i++){
-//      printf("%x", buffer[i]);
-//    }
-//  }
-//}
+int codeIndex(char **code, char *buffer) {
+  for (int i = 0; i < ASCII_COUNT; ++i) {
+    if (code[i] != NULL && strcmp(code[i], buffer) == 0)
+      return i;
+  }
+  return -1;
+}
+
+void decode(char **code, char *bits) {
+  size_t len = strlen(bits);
+  char *result = (char *) malloc(len * sizeof(char));
+  char buffer[BITS_IN_BYTE * 4];
+  size_t resultLen = 0;
+  size_t bufferSize = 0;
+  result[0] = '\0';
+  buffer[0] = '\0';
+  for (int i = 0; i < len; i++) {
+    int index = codeIndex(code, buffer);
+    if (index != -1) {
+//      printf("index for string %s = %d\n",buffer, index);
+      result[resultLen] = (char) index;
+      result[++resultLen] = '\0';
+      buffer[0] = '\0';
+      bufferSize = 0;
+      i--;
+    } else {
+      buffer[bufferSize] = bits[i];
+      buffer[++bufferSize] = '\0';
+    }
+  }
+  printf("%s\n", result);
+}
 
 int main(void) {
 
@@ -120,6 +132,7 @@ int main(void) {
 
   char *arr = malloc(ASCII_COUNT * sizeof(char));
   int *freq = malloc(ASCII_COUNT * sizeof(int));
+
   int size = 0;
 
   for (int i = 0; i < ASCII_COUNT; i++) {
@@ -134,14 +147,14 @@ int main(void) {
 
   char **code = HuffmanCodes(arr, freq, size);
 
-  encode(code, initFile, outputFile);
-
+  char *bits = encode(code, initFile, outputFile);
+//  printf("bits: %s", bits);
   rewind(initFile);
   fclose(outputFile);
 
   outputFile = fopen("compressed_text.txt", "rb");
 
-//  decode(code, outputFile);
+  decode(code, bits);
 
 //  compare();
 
