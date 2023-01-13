@@ -204,6 +204,7 @@ void printCodes(struct MinHeapNode* root, int arr[],
 //    printArr(arr, top);
 
     (*code)[root->data] = arrayToString(arr, top);
+
   }
 }
 
@@ -220,7 +221,9 @@ char** HuffmanCodes(char data[], int freq[], int size){
 
   printCodes(root, arr, top, &code);
 //  for (int i = 0; i < ASCII_COUNT; ++i) {
-//    printf("\ni: %d %s", i, code[i]);
+//    if (code[i] != NULL){
+//      printf("\ni: %d %s", i, code[i]);
+//    }
 //  }
   return code;
 }

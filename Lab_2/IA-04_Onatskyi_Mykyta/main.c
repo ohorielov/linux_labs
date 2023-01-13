@@ -58,19 +58,59 @@ void encode(char **code, FILE *inFilePtr, FILE *outFilePtr) {
     buffer[BITS_IN_BYTE] = '\0';
     for (int j = i, k = 0; j < i + BITS_IN_BYTE; j++, k++)
       buffer[k] = resultBits[j];
-    printf("%s\n", buffer);
+    printf("%s", buffer);
     char byte = strtol(buffer, 0, 2);
     fputc(byte, outFilePtr);
   }
+
   if (i < strlen(resultBits)) {
     char buffer[BITS_IN_BYTE + 1] = "00000000";
     for (int j = 0; i < strlen(resultBits); i++, j++) {
       buffer[j] = resultBits[i];
     }
     char byte = strtol(buffer, 0, 2);
+    printf("%s\n", buffer);
     fputc(byte, outFilePtr);
   }
 }
+
+void addBits(char **bits, char symbol) {
+  char bitString[BITS_IN_BYTE + 1];
+  bitString[BITS_IN_BYTE] = '\0';
+
+  //symbol to binary ?itoa?
+  for (int i = 0; i < BITS_IN_BYTE; ++i) {
+    bitString[i] = '0' + (symbol>>(BITS_IN_BYTE-1-i)&1);
+  }
+
+  char *buffer = (char *) malloc((strlen(*bits) + 1) * sizeof(char));
+  strcpy(buffer, *bits);
+  free(*bits);
+  *bits = (char *) malloc((strlen(buffer) + BITS_IN_BYTE + 1) * sizeof(char));
+  strcpy(*bits, buffer);
+  strncat(*bits, bitString, BITS_IN_BYTE);
+
+}
+
+//void decode(char **code, FILE *inFilePtr) {
+//  fseek(inFilePtr, 0, SEEK_END);
+//  size_t size = ftell(inFilePtr);         //calc the size needed
+//  fseek(inFilePtr, 0, SEEK_SET);
+//  char* buffer = malloc(size);  //allocalte space on heap
+//
+//  if (inFilePtr == NULL){
+//  printf("Error: There was an Error reading the file %s \n", path);
+//    exit(1);
+//  }
+//  else if (fread(&buffer, sizeof(unsigned int), size, inFilePtr) != size){
+//    printf("Error: There was an Error reading the file %s - %d\n", path, r);
+//    exit(1);
+//  }else{int i;
+//    for(i=0; i<size;i++){
+//      printf("%x", buffer[i]);
+//    }
+//  }
+//}
 
 int main(void) {
 
@@ -95,6 +135,18 @@ int main(void) {
   char **code = HuffmanCodes(arr, freq, size);
 
   encode(code, initFile, outputFile);
+
+  rewind(initFile);
+  fclose(outputFile);
+
+  outputFile = fopen("compressed_text.txt", "rb");
+
+//  decode(code, outputFile);
+
+//  compare();
+
+  fclose(initFile);
+  fclose(outputFile);
 
   free(frequencies);
   free(arr);
