@@ -1,6 +1,12 @@
+GCC = gcc
+CFLAGS = -Wall -Werror
+CFLAGS += -O3
+#CFLAGS += -DDEBUG
+
+.PHONY: all
 all:
-	gcc -lm main.c -o cypher
-run:
-	./cypher
+	$(GCC) $(CFLAGS) *.c -o huffman
+
+.PHONY: clean
 clean:
-	rm -rf *o cypher
+	rm -rf huffman out*
