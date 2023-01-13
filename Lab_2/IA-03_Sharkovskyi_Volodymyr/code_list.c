@@ -3,17 +3,13 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-typedef struct code {
-   int symbol;
-
-   struct code *next;
-} code;
+#include "code_list.h"
 
 void codePrint(code *code_head){
     code *link = code_head;
 
     while(link){
-        printf("%u", link->symbol);
+        printf("%c", link->symbol);
         link = link->next;
     }
     printf("\n");
@@ -28,10 +24,10 @@ int codeLength(code *head) {
    return length;
 }
 
-code* insertLast(int symbol, code *code_head) {
-    code *new_code = (code *)malloc(sizeof(code));
+code* insertLast(char symbol, code *code_head) {
+    code *new_code = (code *)calloc(sizeof(code), 1);
     new_code->symbol = symbol;
-    
+
     if (code_head == NULL) {
         code_head = new_code;
         return code_head;

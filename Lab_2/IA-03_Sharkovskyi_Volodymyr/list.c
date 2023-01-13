@@ -2,14 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "tree.c"
 
-typedef struct node {
-   tree_node *tree_node;
-   int count;
-
-   struct node *next;
-} node;
+#include "list.h"
 
 void printList(node *head) {
    node *ptr = head;
@@ -23,12 +17,10 @@ void printList(node *head) {
    printf("]");
 }
 
-//insert link at the first location
-struct node* insertFirst(char symbol, int count, node *head) {
-   //create a link
+node* insertFirst(char symbol, int count, node *head) {
 
-   tree_node *tree = (tree_node *)malloc(sizeof(tree_node));
-   node *link = (node*)malloc(sizeof(node));
+   tree_node *tree = (tree_node *)calloc(sizeof(tree_node), 1);
+   node *link = (node*)calloc(sizeof(node), 1);
 
 	tree->symbol = symbol;
    tree->left = NULL;
@@ -50,10 +42,12 @@ struct node* insertFirst(char symbol, int count, node *head) {
 
 node* insertNodeByPriority(tree_node *tree, int count, node *head) {
 
-   node *new_node = (node *)malloc(sizeof(node));
+   node *new_node = (node *)calloc(sizeof(node), 1);
 
    new_node->tree_node = tree;
    new_node->count = count;
+
+   new_node->next = NULL;
 	
    node *link = head;
    
@@ -81,31 +75,4 @@ node* deleteFirst(node *head) {
    head = link;
 
    return head;
-}
-
-//find a link with given key
-node* find(char symbol, node *head) {
-
-   //start from the first link
-   node* current = head;
-
-   //if list is empty
-   if(head == NULL) {
-      return NULL;
-   }
-
-   //navigate through list
-   while(current->tree_node->symbol != symbol) {
-	
-      //if it is last node
-      if(current->next == NULL) {
-         return NULL;
-      } else {
-         //go to next link
-         current = current->next;
-      }
-   }      
-	
-   //if count found, return the current Link
-   return current;
 }
