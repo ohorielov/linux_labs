@@ -1,0 +1,104 @@
+// Structure for tree nodes
+struct Node {
+	char character;
+	int freq;
+	struct Node *l, *r;
+};
+// Structure for min heap
+struct Min_Heap {
+	int size;
+	struct Node** array;
+};
+
+// Function to create min heap
+struct Min_Heap* createAndBuildMin_Heap(char arr[], int freq[], int unique_size)
+{
+	int i;
+
+// Initializing heap
+	struct Min_Heap* Min_Heap = (struct Min_Heap*)malloc(sizeof(struct Min_Heap));
+	Min_Heap->size = unique_size;
+	Min_Heap->array = (struct Node**)malloc(
+	Min_Heap->size * sizeof(struct Node*));
+
+// Initializing the array of pointers in minheap.
+// Pointers pointing to new nodes of character
+// and their frequency
+	for (i = 0; i < unique_size; ++i) {
+
+// newNode is a function
+// to initialize new node
+	Min_Heap->array[i] = newNode(arr[i], freq[i]);
+}
+
+	int n = Min_Heap->size - 1;
+	for (i = (n - 1) / 2; i >= 0; --i) {
+
+// Standard function for Heap creation
+	Heapify(Min_Heap, i);
+}
+
+	return Min_Heap;
+}
+
+// Function to build Huffman Tree
+struct Node* buildHuffmanTree(char arr[], int freq[], int unique_size)
+{
+	struct Node *l, *r, *top;
+	while (!isSizeOne(Min_Heap)) {
+	l = extractMinFromMin_Heap(Min_Heap);
+	r = extractMinFromMin_Heap(Min_Heap);
+	top = newNode('$', l->freq + r->freq);
+	top->l = l;
+	top->r = r;
+	insertIntoMin_Heap(Min_Heap, top);
+}
+	return extractMinFromMin_Heap(Min_Heap);
+}
+// Structure to store codes in compressed file
+typedef struct code {
+	char k;
+	int l;
+	int code_arr[16];
+	struct code* p;
+} code;
+
+// Function to print codes into file
+void printCodesIntoFile(int fd2, struct Node* root, int t[], int top = 0)
+{
+	int i;
+	if (root->l) {
+		t[top] = 0;
+		printCodesIntoFile(fd2, root->l, t, top + 1);
+}
+	if (root->r) {
+	t[top] = 1;
+	printCodesIntoFile(fd2, root->r, t, top + 1);
+}
+
+	if (isLeaf(root)) {
+	data = (code*)malloc(sizeof(code));
+	tree = (Tree*)malloc(sizeof(Tree));
+	data->p = NULL;
+	data->k = root->character;
+	tree->g = root->character;
+	write(fd2, &tree->g, sizeof(char));
+	for (i = 0; i < top; i++) {
+		data->code_arr[i] = t[i];
+	}
+	tree->len = top;
+	write(fd2, &tree->len, sizeof(int));
+	tree->dec = convertBinaryToDecimal(data->code_arr, top);
+	write(fd2, &tree->dec, sizeof(int));
+	data->l = top;
+	data->p = NULL;
+	if (k == 0) {
+		front = rear = data;
+		k++;
+	}
+	else {
+		rear->p = data;
+		rear = rear->p;
+	}
+}
+}

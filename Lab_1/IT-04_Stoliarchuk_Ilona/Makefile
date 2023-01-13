@@ -1,0 +1,16 @@
+CC :=cc
+CFLAGS := -g -std=c99 -Wall -Werror
+BUILDDIR := ../build
+SRCDIR := ./
+
+all: main
+
+main: $(BUILDDIR)/process.o $(BUILDDIR)/main.o
+	$(CC) $^ -o $(BUILDDIR)/main -lm
+
+$(BUILDDIR)/%.o: $(SRCDIR)/%.c
+	$(CC) -c $(CFLAGS) -o $@ $<
+
+clean:
+	rm -rf $(BUILDDIR)/*
+	
