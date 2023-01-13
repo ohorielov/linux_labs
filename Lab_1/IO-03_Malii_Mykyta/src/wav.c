@@ -122,14 +122,8 @@ void changeVolume(WAV_HEADER* header, bool riseUp){
     int subchunkSize = header->subchunk2Size / sizeof(uint16_t);
     double volumeChange = pow(10, (VOLUME_CHANGE_VALUE/10));
     for (uint32_t i = 0; i < subchunkSize; i++){
-        if(riseUp) {
-            header->wavData[i] = (int16_t)(header->wavData[i] * volumeChange);
-        }
-        else{
-            header->wavData[i] = (int16_t)(header->wavData[i] / volumeChange);
-        }
+        header->wavData[i] = (int16_t)(header->wavData[i] / volumeChange);
     }
-}
 
 void saveInNewFile(WAV_HEADER* header, char *filename){
     FILE *file = fopen(filename, "wb");
