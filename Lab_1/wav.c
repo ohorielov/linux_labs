@@ -1,51 +1,68 @@
-#include "wave.h"
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include "WAV_HEADER.h"
 
-void read_header(FILE *fp, union header_data *file_bytes, char *file_name) {
-  int i;
 
-  for (i = 0; i < HEADER_SIZE && (file_bytes->data[i] = getc(fp)) != EOF; i++)
-    ;
-
-  if (i != HEADER_SIZE) {
-    fprintf(stderr, "Error: file %s header data incomplete\n", file_name);
-    exit(3);
+int read_wav_file (const char *filename, struct WAV_HEADER *header, short **audio_data)
+  //Open the input file in binary mode
+  FILE *input_file = fopen(filename, "rb");
+  //CHeck if file was opened successfully
+  if (!input_file) {
+  printf( "Error opening input file: %s\n", filename);
+  return 1;
   }
-
-void reverse_numerical_bytes(union header_data *file_bytes) {
-  reverse(file_bytes->header.chunk_size.int_bytes, 4);
-  reverse(file_bytes->header.subchunk1_size.int_bytes, 4);
-  reverse(file_bytes->header.audio_format.short_bytes, 2);
-  reverse(file_bytes->header.num_channels.short_bytes, 2);
-  reverse(file_bytes->header.sample_rate.int_bytes, 4);
-  reverse(file_bytes->header.byte_rate.int_bytes, 4);
-  reverse(file_bytes->header.block_align.short_bytes, 2);
-  reverse(file_bytes->header.bits_per_sample.short_bytes, 2);
-  reverse(file_bytes->header.subchunk2_size.int_bytes, 4);
+  
+  //Read the header infromation from the file
+  fread( header, sizeof (struct WAV_HEADER), 1, input_file);
+  
+  //Check if the file is .wav valid file
+  if (memcmp( header->riff, "RIFF", 4) || memcmp( header->>wave, "WAVE", 4) ||
+  memcmp(header->fmt, "fmt", 4) || memcmp( header->>data, "data", 4) {
+  fclose(input_file);
+  return 1;
+  }
+  
+  int data_size = header->data_size;
+  //Allocate memory for the audio data
+  *audio_data = (short *)malloc(data_size);
+  //REad the audio data from file
+  fread(*audio_data, 1, data_size, input_file);
+  fclose(input_file);
+  return 0;
 }
 
-void print_header_data(union header_data *file_bytes) {
-  
-  printf("ChunkID: %.4s\n", file_bytes->header.chunk_id);
-  printf("ChunkSize: %d\n", file_bytes->header.chunk_size.int_value);
-  printf("Format: %.4s\n", file_bytes->header.format);
-  printf("Subchunk1 ID: %.4s\n", file_bytes->header.subchunk1_id);
-  printf("Subchunk1 Size: %d\n", file_bytes->header.subchunk1_size.int_value);
-  printf("Audio Format: %d\n", file_bytes->header.audio_format.short_value);
-  printf("Num Channels: %d\n", file_bytes->header.num_channels.short_value);
-  printf("Sample Rate: %d\n", file_bytes->header.sample_rate.int_value);
-  printf("ByteRate: %d\n", file_bytes->header.byte_rate.int_value);
-  printf("Block Align: %d\n", file_bytes->header.block_align.short_value);
-  printf("Bits per sample: %d\n", file_bytes->header.bits_per_sample.short_value);
-  printf("Subchunk2 Id: %.4s\n", file_bytes->header.subchunk2_id);
-  printf("Subchunk2 size: %d\n", file_bytes->header.subchunk2_size.int_value);
+
+void decrease_volume(short *audio_data, int data_size, float factor) {
+   if (factor < 0) factor = 0;
+   if (factor > 1) factor = 1;
+   //Multiply each sample by the factor to decrease volume
+   for (int 1 = 0; 1 < data_size / sizeof(short); i++) {
+       audio_data[i] = audio_data[i] * factor;
+   )
+   
+int write_wav_file(const char *filename, struct WAV_HEADER header, short *audio_data, int data_size) {
+   //OPen file in binary mode
+   FILE *output_file = fopen(filename, "wb");
+   //Check if file was opened successfully
+   if (!output_file) {
+       printf("Error opening output file: %s\n", filename);
+       return 1;
+   }
+   header.data_size = data_size;
+   
+   // Update the RIFF size field in the header
+   header.riff_size = data_size + sizeof(struct WAV_HEADER) - 8;
+   //Write the header to the output file
+   
+   fwrite(&header, sizeof(struct WAV_HEADER), 1, output_file);
+   //WRITE the audio data data to the output file
+   fwrite(audio_data, 1, data_size, output_file);
+   fclose(output_file);
+   
+   return 0;
 }
 
-  void change_volume(wav *file_bytes, float scale){
-    for (int i = 0; i < file_bytes->data.subchunk2_size / sizeof(short) i++);
-file_bytes->data.data[i] = (short) (file_bytes->data.data[i] * scale);
- }
-  
+
+
   
