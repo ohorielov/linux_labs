@@ -111,7 +111,7 @@ int main(void){
     fwrite(&wh.Subchunk2ID, 4, 1, wav_file_vol_decr);
     fwrite(&wh.Subchunk2Size, 4, 1, wav_file_vol_decr);
 
-    for(int i = 0; i <= wh.Subchunk2Size / 2; i++){
+    for(int i = 0; i <= wh.Subchunk2Size >> 1; i++){
         buffer2bytes = *(wh.data + i);
             fwrite(&buffer2bytes, 2, 1, wav_file_vol_decr);
     }
