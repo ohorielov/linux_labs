@@ -172,6 +172,16 @@ struct MinHeapNode* buildHuffmanTree(char data[],
   return extractMin(minHeap);
 }
 
+char* arrayToString(const int* array, size_t size){
+  char* result = malloc((size+1) * sizeof (char));
+  for (int i = 0; i < size; i++) {
+    result[i] = '0' + array[i];
+  }
+  result[size] = '\0';
+
+  return result;
+}
+
 void printCodes(struct MinHeapNode* root, int arr[],
                 int top, char ***code){
 
@@ -189,13 +199,11 @@ void printCodes(struct MinHeapNode* root, int arr[],
 
   if (isLeaf(root)) {
 
-//    (*code)[root->data]
+//    (*code)[root->data];
 //    printf("%c: ", root->data);
 //    printArr(arr, top);
 
-    for (int i = 0; i < top; i++) {
-      sprintf(&(*code)[root->data][i], "%d", arr[i]);
-    }
+    (*code)[root->data] = arrayToString(arr, top);
   }
 }
 
@@ -205,15 +213,15 @@ char** HuffmanCodes(char data[], int freq[], int size){
 
   int arr[MAX_TREE_HT], top = 0;
 
-  char **code = malloc(ASCII_COUNT * sizeof (int));
+  char **code = malloc(ASCII_COUNT * sizeof (*code));
   for (int i = 0; i < ASCII_COUNT; i++) {
-    code[i] = malloc(16 * sizeof (int));
+    code[i] = NULL;
   }
 
   printCodes(root, arr, top, &code);
-  for (int i = 0; i < size; ++i) {
-    printf("%s\n", code[i]);
-  }
+//  for (int i = 0; i < ASCII_COUNT; ++i) {
+//    printf("\ni: %d %s", i, code[i]);
+//  }
   return code;
 }
 
