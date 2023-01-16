@@ -1,0 +1,3 @@
+﻿  header.c
+C:\Users\ACER\source\repos\C_files\C_files\header.c(59,28): warning C4018: <: несоответствие типов со знаком и без знака
+  C_files.vcxproj -> C:\Users\ACER\source\repos\C_files\x64\Debug\C_files.exe
