@@ -19,6 +19,7 @@ struct WAVHeader {
 };
 
 void readWAVHeader(const char* fileName, struct WAVHeader* header) {
+
 	FILE *file = fopen(fileName, "rb");
 	fread(header, sizeof(struct WAVHeader), 1, file);
 
@@ -43,8 +44,10 @@ int main(){
 	
 	struct WAVHeader header;
 	readWAVHeader("Master Of Puppets.wav", &header);
+
 	int dataSize = header.subchunk2Size / 2;
 	uint16_t* data = (uint16_t*) malloc(dataSize * sizeof(uint16_t));
+
 	FILE *file = fopen("Master Of Puppets.wav", "rb");
 	fseek(file, sizeof(struct WAVHeader), SEEK_SET);
 	fread(data, sizeof(uint16_t), dataSize, file);
@@ -52,7 +55,7 @@ int main(){
 	
 	printf("\nFILE read successful.\n");
 
-	float scalingFactor = 1.2589; 
+	float scalingFactor = 1.2589; // Increase the volume by 2 Db: scalingFactor = 10^(2/20)
 	for (int i = 0; i < dataSize; i++){
 		data[i] = (uint16_t)(data[i] * scalingFactor);
 	}
@@ -61,9 +64,9 @@ int main(){
 	fwrite(&header, sizeof(struct WAVHeader), 1, output);
 	fwrite(data, sizeof(uint16_t), dataSize, output);
 	fclose(output);
+	free(data);
 
 	printf("FILE write successful.\n");
 	printf("Warning: LOUD!\n");
-	free(data);
 	return 0;
 }
